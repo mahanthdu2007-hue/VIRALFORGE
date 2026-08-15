@@ -1,0 +1,20 @@
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# Local secrets — never commit
+.env
+.env.local
+.env.*.local
+
+# Runtime artifacts (uploads, intermediate media, renders)
+storage/
+!storage/.gitkeep
+
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+Thumbs.db
+npm-debug.log*

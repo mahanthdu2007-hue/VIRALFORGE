@@ -1,0 +1,2668 @@
+{
+  "formatVersion": 1,
+  "generator": "viralforge-clip-benchmark",
+  "refinement": null,
+  "weights": {
+    "components": {
+      "hook": 0.17,
+      "curiosity": 0.08,
+      "emotion": 0.1,
+      "information": 0.11,
+      "standalone": 0.12,
+      "payoff": 0.1,
+      "structure": 0.09,
+      "momentum": 0.07,
+      "opening": 0.06,
+      "ending": 0.06,
+      "duration": 0.04
+    },
+    "penalties": {
+      "filler": 0.1,
+      "repetition": 0.08,
+      "contextDependency": 0.12,
+      "boilerplate": 0.1
+    }
+  },
+  "cases": [
+    {
+      "fixtureId": "podcast-interview",
+      "genre": "podcast-interview",
+      "title": "Founder interview: what hiring teaches you",
+      "description": "Two speakers, a housekeeping intro, one strong story found twice, a stretch that leans on material outside itself, and a fabricated hook quote.",
+      "media": {
+        "durationSec": 167.162,
+        "segmentCount": 33,
+        "wordCount": 413,
+        "wordsPerSecond": 2.7
+      },
+      "discovery": {
+        "proposed": 7,
+        "accepted": 6,
+        "rejected": 1,
+        "rejections": [
+          {
+            "candidateId": "pod-invented-quote",
+            "code": "quote_not_verbatim",
+            "reason": "hookQuote rejected: Quote does not occur in the transcript; it appears altered or invented."
+          }
+        ]
+      },
+      "preselection": {
+        "budget": 4,
+        "considered": 6,
+        "preselected": 4,
+        "skipped": 2,
+        "readings": [
+          {
+            "candidateId": "pod-interview-process",
+            "confidence": 0.66,
+            "textPromise": 0.7727,
+            "promise": 0.7276,
+            "selected": true,
+            "signals": {
+              "hook": 0.82,
+              "opening": 1,
+              "ending": 1,
+              "payoff": 0.41,
+              "duration": 1,
+              "boilerplate": 0,
+              "filler": 0.196,
+              "contextDependency": 0
+            }
+          },
+          {
+            "candidateId": "pod-hiring-story-alt",
+            "confidence": 0.68,
+            "textPromise": 0.7578,
+            "promise": 0.7267,
+            "selected": true,
+            "signals": {
+              "hook": 0.683,
+              "opening": 1,
+              "ending": 1,
+              "payoff": 0.41,
+              "duration": 1,
+              "boilerplate": 0,
+              "filler": 0,
+              "contextDependency": 0
+            }
+          },
+          {
+            "candidateId": "pod-hiring-story",
+            "confidence": 0.71,
+            "textPromise": 0.6252,
+            "promise": 0.6591,
+            "selected": false,
+            "signals": {
+              "hook": 0.758,
+              "opening": 0.625,
+              "ending": 1,
+              "payoff": 0.41,
+              "duration": 1,
+              "boilerplate": 0,
+              "filler": 0,
+              "contextDependency": 0.52
+            }
+          },
+          {
+            "candidateId": "pod-intro",
+            "confidence": 0.92,
+            "textPromise": 0.4622,
+            "promise": 0.6453,
+            "selected": true,
+            "signals": {
+              "hook": 0.57,
+              "opening": 1,
+              "ending": 1,
+              "payoff": 0.148,
+              "duration": 1,
+              "boilerplate": 0.653,
+              "filler": 0,
+              "contextDependency": 0
+            }
+          },
+          {
+            "candidateId": "pod-offer-rate",
+            "confidence": 0.6,
+            "textPromise": 0.5705,
+            "promise": 0.5823,
+            "selected": true,
+            "signals": {
+              "hook": 0.658,
+              "opening": 0.625,
+              "ending": 1,
+              "payoff": 0.238,
+              "duration": 0.91,
+              "boilerplate": 0,
+              "filler": 0,
+              "contextDependency": 0.35
+            }
+          },
+          {
+            "candidateId": "pod-callback",
+            "confidence": 0.55,
+            "textPromise": 0.5471,
+            "promise": 0.5483,
+            "selected": false,
+            "signals": {
+              "hook": 0.67,
+              "opening": 0.625,
+              "ending": 1,
+              "payoff": 0.248,
+              "duration": 0.96,
+              "boilerplate": 0,
+              "filler": 0.228,
+              "contextDependency": 0.4
+            }
+          }
+        ]
+      },
+      "construction": {
+        "built": 4,
+        "accepted": 4,
+        "rejected": 0,
+        "rejections": [],
+        "clips": [
+          {
+            "candidateId": "pod-intro",
+            "startSec": 0,
+            "endSec": 33.972,
+            "durationSec": 33.972,
+            "withinTargetWindow": true,
+            "wordCount": 87,
+            "wordsPerSecond": 2.561,
+            "maxGapSec": 0.35,
+            "segmentCount": 6,
+            "boundaries": {
+              "startSnap": "word",
+              "endSnap": "word",
+              "startsOnSentence": true,
+              "endsOnSentence": true,
+              "startShiftSec": 0,
+              "endShiftSec": 0,
+              "notes": []
+            },
+            "title": "Show introduction",
+            "hookQuote": "Welcome back to the show, and before we start, please subscribe and hit that bell icon.",
+            "aiAssisted": false
+          },
+          {
+            "candidateId": "pod-hiring-story-alt",
+            "startSec": 34.322,
+            "endSec": 69.384,
+            "durationSec": 35.062,
+            "withinTargetWindow": true,
+            "wordCount": 89,
+            "wordsPerSecond": 2.538,
+            "maxGapSec": 0.35,
+            "segmentCount": 7,
+            "boundaries": {
+              "startSnap": "word",
+              "endSnap": "word",
+              "startsOnSentence": true,
+              "endsOnSentence": true,
+              "startShiftSec": 0,
+              "endShiftSec": 0,
+              "notes": []
+            },
+            "title": "Hiring for next year",
+            "hookQuote": "I watched a company hire nine support agents in a single quarter.",
+            "aiAssisted": false
+          },
+          {
+            "candidateId": "pod-interview-process",
+            "startSec": 98.872,
+            "endSec": 132.453,
+            "durationSec": 33.581,
+            "withinTargetWindow": true,
+            "wordCount": 85,
+            "wordsPerSecond": 2.531,
+            "maxGapSec": 0.35,
+            "segmentCount": 7,
+            "boundaries": {
+              "startSnap": "word",
+              "endSnap": "word",
+              "startsOnSentence": true,
+              "endsOnSentence": true,
+              "startShiftSec": 0,
+              "endShiftSec": 0,
+              "notes": []
+            },
+            "title": "Paid work-sample interviews",
+            "hookQuote": "We stopped asking hypothetical questions about three years ago.",
+            "aiAssisted": false
+          },
+          {
+            "candidateId": "pod-offer-rate",
+            "startSec": 127.268,
+            "endSec": 157.886,
+            "durationSec": 30.618,
+            "withinTargetWindow": true,
+            "wordCount": 77,
+            "wordsPerSecond": 2.515,
+            "maxGapSec": 0.35,
+            "segmentCount": 7,
+            "boundaries": {
+              "startSnap": "word",
+              "endSnap": "word",
+              "startsOnSentence": true,
+              "endsOnSentence": true,
+              "startShiftSec": 0,
+              "endShiftSec": 3.313,
+              "notes": []
+            },
+            "title": "Offer acceptance",
+            "hookQuote": "So a resume tells you where somebody has been, not what they can do.",
+            "aiAssisted": false
+          }
+        ]
+      },
+      "scoring": [
+        {
+          "candidateId": "pod-intro",
+          "overall": 0.5538,
+          "hook": 0.72,
+          "standalone": 0.9,
+          "emotion": 0,
+          "value": 0.385,
+          "components": {
+            "hook": 0.72,
+            "curiosity": 0.42,
+            "emotion": 0,
+            "information": 0.434,
+            "standalone": 0.9,
+            "payoff": 0.336,
+            "structure": 0.82,
+            "momentum": 1,
+            "opening": 0.5,
+            "ending": 1,
+            "duration": 1
+          },
+          "penalties": {
+            "filler": 0,
+            "repetition": 0,
+            "contextDependency": 0,
+            "boilerplate": 0.653
+          },
+          "componentTotal": 0.6191,
+          "penaltyTotal": 0.0653,
+          "rationale": "Strongest on hook (0.72) and standing alone (0.90); weakest on emotional intensity. Penalised for channel boilerplate (0.65)."
+        },
+        {
+          "candidateId": "pod-hiring-story-alt",
+          "overall": 0.6951,
+          "hook": 0.715,
+          "standalone": 0.825,
+          "emotion": 0,
+          "value": 0.629,
+          "components": {
+            "hook": 0.715,
+            "curiosity": 0.42,
+            "emotion": 0,
+            "information": 0.593,
+            "standalone": 0.825,
+            "payoff": 0.665,
+            "structure": 0.88,
+            "momentum": 1,
+            "opening": 1,
+            "ending": 1,
+            "duration": 1
+          },
+          "penalties": {
+            "filler": 0,
+            "repetition": 0,
+            "contextDependency": 0,
+            "boilerplate": 0
+          },
+          "componentTotal": 0.6951,
+          "penaltyTotal": 0,
+          "rationale": "Strongest on hook (0.71) and standing alone (0.82); weakest on emotional intensity."
+        },
+        {
+          "candidateId": "pod-interview-process",
+          "overall": 0.7155,
+          "hook": 0.91,
+          "standalone": 0.875,
+          "emotion": 0.193,
+          "value": 0.655,
+          "components": {
+            "hook": 0.91,
+            "curiosity": 0.12,
+            "emotion": 0.193,
+            "information": 0.644,
+            "standalone": 0.875,
+            "payoff": 0.665,
+            "structure": 0.88,
+            "momentum": 1,
+            "opening": 1,
+            "ending": 1,
+            "duration": 1
+          },
+          "penalties": {
+            "filler": 0.196,
+            "repetition": 0,
+            "contextDependency": 0,
+            "boilerplate": 0
+          },
+          "componentTotal": 0.7351,
+          "penaltyTotal": 0.0196,
+          "rationale": "Strongest on hook (0.91) and standing alone (0.88); weakest on curiosity. Penalised for filler (0.20)."
+        },
+        {
+          "candidateId": "pod-offer-rate",
+          "overall": 0.5833,
+          "hook": 0.695,
+          "standalone": 0.67,
+          "emotion": 0,
+          "value": 0.433,
+          "components": {
+            "hook": 0.695,
+            "curiosity": 0.613,
+            "emotion": 0,
+            "information": 0.607,
+            "standalone": 0.67,
+            "payoff": 0.258,
+            "structure": 0.813,
+            "momentum": 1,
+            "opening": 0.7,
+            "ending": 1,
+            "duration": 1
+          },
+          "penalties": {
+            "filler": 0,
+            "repetition": 0,
+            "contextDependency": 0.35,
+            "boilerplate": 0
+          },
+          "componentTotal": 0.6253,
+          "penaltyTotal": 0.042,
+          "rationale": "Strongest on hook (0.69) and standing alone (0.67); weakest on emotional intensity. Penalised for context dependency (0.35)."
+        }
+      ],
+      "ranking": {
+        "selected": [
+          {
+            "rank": 1,
+            "candidateId": "pod-interview-process",
+            "title": "Paid work-sample interviews",
+            "topic": "Paid work-sample interviews",
+            "startSec": 98.872,
+            "endSec": 132.453,
+            "durationSec": 33.581,
+            "overall": 0.7155,
+            "diversityDiscount": 0,
+            "opening": {
+              "hook": 0.91,
+              "opening": 1,
+              "hookQuote": "We stopped asking hypothetical questions about three years ago.",
+              "quoteOpensClip": true,
+              "startsOnSentence": true,
+              "opensOnBoilerplate": false,
+              "opensOnContinuation": false,
+              "firstSentenceComplete": true,
+              "firstSentenceWordCount": 9
+            },
+            "landing": {
+              "payoff": 0.665,
+              "ending": 1,
+              "endsOnSentence": true,
+              "endsOnSentencePunctuation": true,
+              "endsOnDanglingWord": false,
+              "closingPayoffHits": 0
+            }
+          },
+          {
+            "rank": 2,
+            "candidateId": "pod-hiring-story-alt",
+            "title": "Hiring for next year",
+            "topic": "Hiring for next year",
+            "startSec": 34.322,
+            "endSec": 69.384,
+            "durationSec": 35.062,
+            "overall": 0.6951,
+            "diversityDiscount": 0.0149,
+            "opening": {
+              "hook": 0.715,
+              "opening": 1,
+              "hookQuote": "I watched a company hire nine support agents in a single quarter.",
+              "quoteOpensClip": true,
+              "startsOnSentence": true,
+              "opensOnBoilerplate": false,
+              "opensOnContinuation": false,
+              "firstSentenceComplete": true,
+              "firstSentenceWordCount": 12
+            },
+            "landing": {
+              "payoff": 0.665,
+              "ending": 1,
+              "endsOnSentence": true,
+              "endsOnSentencePunctuation": true,
+              "endsOnDanglingWord": false,
+              "closingPayoffHits": 0
+            }
+          },
+          {
+            "rank": 3,
+            "candidateId": "pod-offer-rate",
+            "title": "Offer acceptance",
+            "topic": "Offer acceptance",
+            "startSec": 127.268,
+            "endSec": 157.886,
+            "durationSec": 30.618,
+            "overall": 0.5833,
+            "diversityDiscount": 0.0218,
+            "opening": {
+              "hook": 0.695,
+              "opening": 0.7,
+              "hookQuote": "So a resume tells you where somebody has been, not what they can do.",
+              "quoteOpensClip": true,
+              "startsOnSentence": true,
+              "opensOnBoilerplate": false,
+              "opensOnContinuation": true,
+              "firstSentenceComplete": true,
+              "firstSentenceWordCount": 14
+            },
+            "landing": {
+              "payoff": 0.258,
+              "ending": 1,
+              "endsOnSentence": true,
+              "endsOnSentencePunctuation": true,
+              "endsOnDanglingWord": false,
+              "closingPayoffHits": 0
+            }
+          }
+        ],
+        "rejections": [
+          {
+            "candidateId": "pod-intro",
+            "code": "beyond_limit",
+            "reason": "Ranked below the top 3."
+          }
+        ]
+      },
+      "diversity": {
+        "pairs": [
+          {
+            "a": "pod-interview-process",
+            "b": "pod-hiring-story-alt",
+            "textSimilarity": 0.0568,
+            "overlapRatio": 0,
+            "timelineProximity": 0.6724,
+            "sameTopic": false,
+            "gapSec": 29.488
+          },
+          {
+            "a": "pod-interview-process",
+            "b": "pod-offer-rate",
+            "textSimilarity": 0.0789,
+            "overlapRatio": 0.1693,
+            "timelineProximity": 1,
+            "sameTopic": false,
+            "gapSec": 0
+          },
+          {
+            "a": "pod-hiring-story-alt",
+            "b": "pod-offer-rate",
+            "textSimilarity": 0.0366,
+            "overlapRatio": 0,
+            "timelineProximity": 0.3568,
+            "sameTopic": false,
+            "gapSec": 57.884
+          }
+        ],
+        "maxTextSimilarity": 0.0789,
+        "maxOverlapRatio": 0.1693,
+        "maxTimelineProximity": 1,
+        "distinctTopics": 3,
+        "minGapSec": 0,
+        "timelineSpread": 0.7392
+      },
+      "funnel": [
+        {
+          "candidateId": "pod-intro",
+          "note": "Channel housekeeping. Must never win a slot.",
+          "outcome": "ranked-out",
+          "stage": "ranking",
+          "detail": "beyond_limit: Ranked below the top 3."
+        },
+        {
+          "candidateId": "pod-hiring-story",
+          "note": "The best moment in the file. Should rank first.",
+          "outcome": "not-preselected",
+          "stage": "preselection",
+          "detail": "Outside the build budget of 4."
+        },
+        {
+          "candidateId": "pod-hiring-story-alt",
+          "note": "Near-duplicate of pod-hiring-story. Exactly one of the two may survive.",
+          "outcome": "selected",
+          "stage": "ranking",
+          "detail": "Ranked 2 at 0.6951."
+        },
+        {
+          "candidateId": "pod-callback",
+          "note": "Leans on pronouns with no referent inside the span.",
+          "outcome": "not-preselected",
+          "stage": "preselection",
+          "detail": "Outside the build budget of 4."
+        },
+        {
+          "candidateId": "pod-interview-process",
+          "note": "A second strong moment on a different subject. Should reach the top three.",
+          "outcome": "selected",
+          "stage": "ranking",
+          "detail": "Ranked 1 at 0.7155."
+        },
+        {
+          "candidateId": "pod-offer-rate",
+          "note": "Adjacent to pod-interview-process; tests the proximity discount.",
+          "outcome": "selected",
+          "stage": "ranking",
+          "detail": "Ranked 3 at 0.5833."
+        },
+        {
+          "candidateId": "pod-invented-quote",
+          "note": "Never said. Must be rejected by the verbatim guard.",
+          "outcome": "rejected",
+          "stage": "discovery",
+          "detail": "quote_not_verbatim: hookQuote rejected: Quote does not occur in the transcript; it appears altered or invented."
+        }
+      ]
+    },
+    {
+      "fixtureId": "educational-explainer",
+      "genre": "educational-explainer",
+      "title": "Explainer: what compound interest actually does",
+      "description": "Single narrator, dense numeric detail, a sponsor read in the middle, and a moment that is a setup rather than a payoff despite reading well.",
+      "media": {
+        "durationSec": 149.7,
+        "segmentCount": 29,
+        "wordCount": 347,
+        "wordsPerSecond": 2.5
+      },
+      "discovery": {
+        "proposed": 6,
+        "accepted": 5,
+        "rejected": 1,
+        "rejections": [
+          {
+            "candidateId": "edu-whole-video",
+            "code": "too_long",
+            "reason": "Moment is 91.5s, above the 60s maximum."
+          }
+        ]
+      },
+      "preselection": {
+        "budget": 4,
+        "considered": 5,
+        "preselected": 4,
+        "skipped": 1,
+        "readings": [
+          {
+            "candidateId": "edu-mechanism",
+            "confidence": 0.74,
+            "textPromise": 0.8092,
+            "promise": 0.7815,
+            "selected": true,
+            "signals": {
+              "hook": 0.783,
+              "opening": 1,
+              "ending": 1,
+              "payoff": 0.5,
+              "duration": 1,
+              "boilerplate": 0,
+              "filler": 0,
+              "contextDependency": 0
+            }
+          },
+          {
+            "candidateId": "edu-lesson",
+            "confidence": 0.69,
+            "textPromise": 0.825,
+            "promise": 0.771,
+            "selected": true,
+            "signals": {
+              "hook": 1,
+              "opening": 1,
+              "ending": 1,
+              "payoff": 0.41,
+              "duration": 1,
+              "boilerplate": 0,
+              "filler": 0,
+              "contextDependency": 0.12
+            }
+          },
+          {
+            "candidateId": "edu-sponsor",
+            "confidence": 0.88,
+            "textPromise": 0.6823,
+            "promise": 0.7614,
+            "selected": true,
+            "signals": {
+              "hook": 0.82,
+              "opening": 1,
+              "ending": 1,
+              "payoff": 0.148,
+              "duration": 0.827,
+              "boilerplate": 0,
+              "filler": 0,
+              "contextDependency": 0.12
+            }
+          },
+          {
+            "candidateId": "edu-fees",
+            "confidence": 0.63,
+            "textPromise": 0.7596,
+            "promise": 0.7078,
+            "selected": true,
+            "signals": {
+              "hook": 0.683,
+              "opening": 1,
+              "ending": 1,
+              "payoff": 0.5,
+              "duration": 1,
+              "boilerplate": 0,
+              "filler": 0,
+              "contextDependency": 0.12
+            }
+          },
+          {
+            "candidateId": "edu-setup",
+            "confidence": 0.7,
+            "textPromise": 0.5541,
+            "promise": 0.6124,
+            "selected": false,
+            "signals": {
+              "hook": 0.67,
+              "opening": 0.625,
+              "ending": 1,
+              "payoff": 0.148,
+              "duration": 1,
+              "boilerplate": 0,
+              "filler": 0,
+              "contextDependency": 0.4
+            }
+          }
+        ]
+      },
+      "construction": {
+        "built": 4,
+        "accepted": 4,
+        "rejected": 0,
+        "rejections": [],
+        "clips": [
+          {
+            "candidateId": "edu-mechanism",
+            "startSec": 0,
+            "endSec": 37,
+            "durationSec": 37,
+            "withinTargetWindow": true,
+            "wordCount": 88,
+            "wordsPerSecond": 2.378,
+            "maxGapSec": 0.3,
+            "segmentCount": 7,
+            "boundaries": {
+              "startSnap": "word",
+              "endSnap": "word",
+              "startsOnSentence": true,
+              "endsOnSentence": true,
+              "startShiftSec": 0,
+              "endShiftSec": 0,
+              "notes": []
+            },
+            "title": "How compounding works",
+            "hookQuote": "Compound interest gets explained badly, so let us fix that in the next few minutes.",
+            "aiAssisted": false
+          },
+          {
+            "candidateId": "edu-lesson",
+            "startSec": 62.4,
+            "endSec": 97,
+            "durationSec": 34.6,
+            "withinTargetWindow": true,
+            "wordCount": 82,
+            "wordsPerSecond": 2.37,
+            "maxGapSec": 0.3,
+            "segmentCount": 7,
+            "boundaries": {
+              "startSnap": "word",
+              "endSnap": "word",
+              "startsOnSentence": true,
+              "endsOnSentence": true,
+              "startShiftSec": 0,
+              "endShiftSec": 0,
+              "notes": []
+            },
+            "title": "Start early",
+            "hookQuote": "Here is the part that surprises almost everybody.",
+            "aiAssisted": false
+          },
+          {
+            "candidateId": "edu-sponsor",
+            "startSec": 97.3,
+            "endSec": 132.3,
+            "durationSec": 35,
+            "withinTargetWindow": true,
+            "wordCount": 83,
+            "wordsPerSecond": 2.371,
+            "maxGapSec": 0.3,
+            "segmentCount": 7,
+            "boundaries": {
+              "startSnap": "word",
+              "endSnap": "word",
+              "startsOnSentence": true,
+              "endsOnSentence": true,
+              "startShiftSec": 0,
+              "endShiftSec": 10.2,
+              "notes": []
+            },
+            "title": "Housekeeping and inflation",
+            "hookQuote": "Quick reminder to like this video if the numbers are helping you.",
+            "aiAssisted": false
+          },
+          {
+            "candidateId": "edu-fees",
+            "startSec": 107.1,
+            "endSec": 142.1,
+            "durationSec": 35,
+            "withinTargetWindow": true,
+            "wordCount": 83,
+            "wordsPerSecond": 2.371,
+            "maxGapSec": 0.3,
+            "segmentCount": 7,
+            "boundaries": {
+              "startSnap": "word",
+              "endSnap": "word",
+              "startsOnSentence": true,
+              "endsOnSentence": true,
+              "startShiftSec": 0,
+              "endShiftSec": 0,
+              "notes": []
+            },
+            "title": "What breaks compounding",
+            "hookQuote": "Now let us talk about what breaks this whole model.",
+            "aiAssisted": false
+          }
+        ]
+      },
+      "scoring": [
+        {
+          "candidateId": "edu-mechanism",
+          "overall": 0.7285,
+          "hook": 0.88,
+          "standalone": 0.9,
+          "emotion": 0.138,
+          "value": 0.57,
+          "components": {
+            "hook": 0.88,
+            "curiosity": 0.4,
+            "emotion": 0.138,
+            "information": 0.626,
+            "standalone": 0.9,
+            "payoff": 0.513,
+            "structure": 0.874,
+            "momentum": 1,
+            "opening": 1,
+            "ending": 1,
+            "duration": 1
+          },
+          "penalties": {
+            "filler": 0,
+            "repetition": 0.047,
+            "contextDependency": 0,
+            "boilerplate": 0
+          },
+          "componentTotal": 0.7322,
+          "penaltyTotal": 0.0038,
+          "rationale": "Strongest on hook (0.88) and standing alone (0.90); weakest on emotional intensity."
+        },
+        {
+          "candidateId": "edu-lesson",
+          "overall": 0.7096,
+          "hook": 1,
+          "standalone": 0.839,
+          "emotion": 0.165,
+          "value": 0.592,
+          "components": {
+            "hook": 1,
+            "curiosity": 0.208,
+            "emotion": 0.165,
+            "information": 0.63,
+            "standalone": 0.839,
+            "payoff": 0.553,
+            "structure": 0.862,
+            "momentum": 1,
+            "opening": 1,
+            "ending": 1,
+            "duration": 1
+          },
+          "penalties": {
+            "filler": 0,
+            "repetition": 0.15,
+            "contextDependency": 0.12,
+            "boilerplate": 0
+          },
+          "componentTotal": 0.736,
+          "penaltyTotal": 0.0264,
+          "rationale": "Strongest on hook (1.00) and standing alone (0.84); weakest on emotional intensity. Penalised for context dependency (0.12), repetition (0.15)."
+        },
+        {
+          "candidateId": "edu-sponsor",
+          "overall": 0.6316,
+          "hook": 0.91,
+          "standalone": 0.814,
+          "emotion": 0,
+          "value": 0.35,
+          "components": {
+            "hook": 0.91,
+            "curiosity": 0.12,
+            "emotion": 0,
+            "information": 0.481,
+            "standalone": 0.814,
+            "payoff": 0.219,
+            "structure": 0.88,
+            "momentum": 1,
+            "opening": 1,
+            "ending": 1,
+            "duration": 1
+          },
+          "penalties": {
+            "filler": 0,
+            "repetition": 0,
+            "contextDependency": 0.12,
+            "boilerplate": 0
+          },
+          "componentTotal": 0.646,
+          "penaltyTotal": 0.0144,
+          "rationale": "Strongest on hook (0.91) and standing alone (0.81); weakest on emotional intensity. Penalised for context dependency (0.12)."
+        },
+        {
+          "candidateId": "edu-fees",
+          "overall": 0.6688,
+          "hook": 0.715,
+          "standalone": 0.814,
+          "emotion": 0,
+          "value": 0.582,
+          "components": {
+            "hook": 0.715,
+            "curiosity": 0.4,
+            "emotion": 0,
+            "information": 0.645,
+            "standalone": 0.814,
+            "payoff": 0.518,
+            "structure": 0.88,
+            "momentum": 1,
+            "opening": 1,
+            "ending": 1,
+            "duration": 1
+          },
+          "penalties": {
+            "filler": 0,
+            "repetition": 0,
+            "contextDependency": 0.12,
+            "boilerplate": 0
+          },
+          "componentTotal": 0.6832,
+          "penaltyTotal": 0.0144,
+          "rationale": "Strongest on hook (0.71) and standing alone (0.81); weakest on emotional intensity. Penalised for context dependency (0.12)."
+        }
+      ],
+      "ranking": {
+        "selected": [
+          {
+            "rank": 1,
+            "candidateId": "edu-mechanism",
+            "title": "How compounding works",
+            "topic": "How compounding works",
+            "startSec": 0,
+            "endSec": 37,
+            "durationSec": 37,
+            "overall": 0.7285,
+            "diversityDiscount": 0,
+            "opening": {
+              "hook": 0.88,
+              "opening": 1,
+              "hookQuote": "Compound interest gets explained badly, so let us fix that in the next few minutes.",
+              "quoteOpensClip": true,
+              "startsOnSentence": true,
+              "opensOnBoilerplate": false,
+              "opensOnContinuation": false,
+              "firstSentenceComplete": true,
+              "firstSentenceWordCount": 15
+            },
+            "landing": {
+              "payoff": 0.513,
+              "ending": 1,
+              "endsOnSentence": true,
+              "endsOnSentencePunctuation": true,
+              "endsOnDanglingWord": false,
+              "closingPayoffHits": 0
+            }
+          },
+          {
+            "rank": 2,
+            "candidateId": "edu-lesson",
+            "title": "Start early",
+            "topic": "Start early",
+            "startSec": 62.4,
+            "endSec": 97,
+            "durationSec": 34.6,
+            "overall": 0.7096,
+            "diversityDiscount": 0.0148,
+            "opening": {
+              "hook": 1,
+              "opening": 1,
+              "hookQuote": "Here is the part that surprises almost everybody.",
+              "quoteOpensClip": true,
+              "startsOnSentence": true,
+              "opensOnBoilerplate": false,
+              "opensOnContinuation": false,
+              "firstSentenceComplete": true,
+              "firstSentenceWordCount": 8
+            },
+            "landing": {
+              "payoff": 0.553,
+              "ending": 1,
+              "endsOnSentence": true,
+              "endsOnSentencePunctuation": true,
+              "endsOnDanglingWord": false,
+              "closingPayoffHits": 0
+            }
+          },
+          {
+            "rank": 3,
+            "candidateId": "edu-fees",
+            "title": "What breaks compounding",
+            "topic": "What breaks compounding",
+            "startSec": 107.1,
+            "endSec": 142.1,
+            "durationSec": 35,
+            "overall": 0.6688,
+            "diversityDiscount": 0.023,
+            "opening": {
+              "hook": 0.715,
+              "opening": 1,
+              "hookQuote": "Now let us talk about what breaks this whole model.",
+              "quoteOpensClip": true,
+              "startsOnSentence": true,
+              "opensOnBoilerplate": false,
+              "opensOnContinuation": false,
+              "firstSentenceComplete": true,
+              "firstSentenceWordCount": 10
+            },
+            "landing": {
+              "payoff": 0.518,
+              "ending": 1,
+              "endsOnSentence": true,
+              "endsOnSentencePunctuation": true,
+              "endsOnDanglingWord": false,
+              "closingPayoffHits": 0
+            }
+          }
+        ],
+        "rejections": [
+          {
+            "candidateId": "edu-sponsor",
+            "code": "beyond_limit",
+            "reason": "Ranked below the top 3."
+          }
+        ]
+      },
+      "diversity": {
+        "pairs": [
+          {
+            "a": "edu-mechanism",
+            "b": "edu-lesson",
+            "textSimilarity": 0.0449,
+            "overlapRatio": 0,
+            "timelineProximity": 0.7178,
+            "sameTopic": false,
+            "gapSec": 25.4
+          },
+          {
+            "a": "edu-mechanism",
+            "b": "edu-fees",
+            "textSimilarity": 0.12,
+            "overlapRatio": 0,
+            "timelineProximity": 0.2211,
+            "sameTopic": false,
+            "gapSec": 70.1
+          },
+          {
+            "a": "edu-lesson",
+            "b": "edu-fees",
+            "textSimilarity": 0.0581,
+            "overlapRatio": 0,
+            "timelineProximity": 0.8878,
+            "sameTopic": false,
+            "gapSec": 10.1
+          }
+        ],
+        "maxTextSimilarity": 0.12,
+        "maxOverlapRatio": 0,
+        "maxTimelineProximity": 0.8878,
+        "distinctTopics": 3,
+        "minGapSec": 10.1,
+        "timelineSpread": 0.9492
+      },
+      "funnel": [
+        {
+          "candidateId": "edu-mechanism",
+          "note": "Complete explanation with a landing. Should rank near the top.",
+          "outcome": "selected",
+          "stage": "ranking",
+          "detail": "Ranked 1 at 0.7285."
+        },
+        {
+          "candidateId": "edu-setup",
+          "note": "A setup, not a landing. Should score below edu-lesson.",
+          "outcome": "not-preselected",
+          "stage": "preselection",
+          "detail": "Outside the build budget of 4."
+        },
+        {
+          "candidateId": "edu-lesson",
+          "note": "Overlaps edu-setup and says the same thing better. One of the two, at most.",
+          "outcome": "selected",
+          "stage": "ranking",
+          "detail": "Ranked 2 at 0.7096."
+        },
+        {
+          "candidateId": "edu-sponsor",
+          "note": "Opens on a call to action. Must not reach the top three.",
+          "outcome": "ranked-out",
+          "stage": "ranking",
+          "detail": "beyond_limit: Ranked below the top 3."
+        },
+        {
+          "candidateId": "edu-fees",
+          "note": "Distinct subject, clean landing. Expected in the top three.",
+          "outcome": "selected",
+          "stage": "ranking",
+          "detail": "Ranked 3 at 0.6688."
+        },
+        {
+          "candidateId": "edu-whole-video",
+          "note": "Far past the 60s discovery window. Must be rejected as too long.",
+          "outcome": "rejected",
+          "stage": "discovery",
+          "detail": "too_long: Moment is 91.5s, above the 60s maximum."
+        }
+      ]
+    },
+    {
+      "fixtureId": "storytelling",
+      "genre": "storytelling",
+      "title": "Getting lost in the Cairngorms",
+      "description": "Slow first-person narration with a long setup, a resolution that arrives late, and a second story competing for the last slot.",
+      "media": {
+        "durationSec": 185.162,
+        "segmentCount": 28,
+        "wordCount": 387,
+        "wordsPerSecond": 2.3
+      },
+      "discovery": {
+        "proposed": 6,
+        "accepted": 5,
+        "rejected": 1,
+        "rejections": [
+          {
+            "candidateId": "story-fragment",
+            "code": "too_short",
+            "reason": "Moment is 10.9s, below the 20s minimum."
+          }
+        ]
+      },
+      "preselection": {
+        "budget": 4,
+        "considered": 5,
+        "preselected": 4,
+        "skipped": 1,
+        "readings": [
+          {
+            "candidateId": "story-setup",
+            "confidence": 0.86,
+            "textPromise": 0.7281,
+            "promise": 0.7808,
+            "selected": true,
+            "signals": {
+              "hook": 0.82,
+              "opening": 1,
+              "ending": 1,
+              "payoff": 0.148,
+              "duration": 1,
+              "boilerplate": 0,
+              "filler": 0,
+              "contextDependency": 0
+            }
+          },
+          {
+            "candidateId": "story-lesson",
+            "confidence": 0.6,
+            "textPromise": 0.7802,
+            "promise": 0.7081,
+            "selected": true,
+            "signals": {
+              "hook": 0.67,
+              "opening": 1,
+              "ending": 1,
+              "payoff": 0.51,
+              "duration": 1,
+              "boilerplate": 0,
+              "filler": 0,
+              "contextDependency": 0
+            }
+          },
+          {
+            "candidateId": "story-second",
+            "confidence": 0.58,
+            "textPromise": 0.7388,
+            "promise": 0.6753,
+            "selected": true,
+            "signals": {
+              "hook": 0.683,
+              "opening": 0.625,
+              "ending": 1,
+              "payoff": 0.81,
+              "duration": 1,
+              "boilerplate": 0,
+              "filler": 0,
+              "contextDependency": 0.35
+            }
+          },
+          {
+            "candidateId": "story-turn",
+            "confidence": 0.64,
+            "textPromise": 0.6582,
+            "promise": 0.6509,
+            "selected": true,
+            "signals": {
+              "hook": 0.683,
+              "opening": 0.625,
+              "ending": 1,
+              "payoff": 0.5,
+              "duration": 1,
+              "boilerplate": 0,
+              "filler": 0,
+              "contextDependency": 0.35
+            }
+          },
+          {
+            "candidateId": "story-turn-late",
+            "confidence": 0.61,
+            "textPromise": 0.6152,
+            "promise": 0.6131,
+            "selected": false,
+            "signals": {
+              "hook": 0.645,
+              "opening": 0.625,
+              "ending": 1,
+              "payoff": 0.41,
+              "duration": 1,
+              "boilerplate": 0,
+              "filler": 0,
+              "contextDependency": 0.4
+            }
+          }
+        ]
+      },
+      "construction": {
+        "built": 4,
+        "accepted": 4,
+        "rejected": 0,
+        "rejections": [],
+        "clips": [
+          {
+            "candidateId": "story-setup",
+            "startSec": 0,
+            "endSec": 36.597,
+            "durationSec": 36.597,
+            "withinTargetWindow": true,
+            "wordCount": 79,
+            "wordsPerSecond": 2.159,
+            "maxGapSec": 0.45,
+            "segmentCount": 6,
+            "boundaries": {
+              "startSnap": "word",
+              "endSnap": "word",
+              "startsOnSentence": true,
+              "endsOnSentence": true,
+              "startShiftSec": 0,
+              "endShiftSec": -13.824,
+              "notes": []
+            },
+            "title": "Lost above the treeline",
+            "hookQuote": "I got lost in the Cairngorms when I was nineteen years old.",
+            "aiAssisted": false
+          },
+          {
+            "candidateId": "story-turn",
+            "startSec": 50.871,
+            "endSec": 87.034,
+            "durationSec": 36.163,
+            "withinTargetWindow": true,
+            "wordCount": 78,
+            "wordsPerSecond": 2.157,
+            "maxGapSec": 0.45,
+            "segmentCount": 6,
+            "boundaries": {
+              "startSnap": "word",
+              "endSnap": "word",
+              "startsOnSentence": true,
+              "endsOnSentence": true,
+              "startShiftSec": 0,
+              "endShiftSec": -13.944,
+              "notes": []
+            },
+            "title": "Stopping to think",
+            "hookQuote": "So I did the only sensible thing anybody had ever taught me.",
+            "aiAssisted": false
+          },
+          {
+            "candidateId": "story-lesson",
+            "startSec": 101.428,
+            "endSec": 140.635,
+            "durationSec": 39.207,
+            "withinTargetWindow": true,
+            "wordCount": 85,
+            "wordsPerSecond": 2.168,
+            "maxGapSec": 0.45,
+            "segmentCount": 6,
+            "boundaries": {
+              "startSnap": "word",
+              "endSnap": "word",
+              "startsOnSentence": true,
+              "endsOnSentence": true,
+              "startShiftSec": 0,
+              "endShiftSec": -6.537,
+              "notes": []
+            },
+            "title": "What the night taught me",
+            "hookQuote": "A woman driving a livestock trailer stopped without me even lifting a hand.",
+            "aiAssisted": false
+          },
+          {
+            "candidateId": "story-second",
+            "startSec": 135.418,
+            "endSec": 174.19,
+            "durationSec": 38.772,
+            "withinTargetWindow": true,
+            "wordCount": 84,
+            "wordsPerSecond": 2.167,
+            "maxGapSec": 0.45,
+            "segmentCount": 6,
+            "boundaries": {
+              "startSnap": "word",
+              "endSnap": "word",
+              "startsOnSentence": true,
+              "endsOnSentence": true,
+              "startShiftSec": 0,
+              "endShiftSec": -6.972,
+              "notes": []
+            },
+            "title": "The following summer",
+            "hookQuote": "So I want to tell you what happened the following summer instead.",
+            "aiAssisted": false
+          }
+        ]
+      },
+      "scoring": [
+        {
+          "candidateId": "story-setup",
+          "overall": 0.6887,
+          "hook": 0.91,
+          "standalone": 0.85,
+          "emotion": 0.385,
+          "value": 0.396,
+          "components": {
+            "hook": 0.91,
+            "curiosity": 0.12,
+            "emotion": 0.385,
+            "information": 0.475,
+            "standalone": 0.85,
+            "payoff": 0.318,
+            "structure": 0.868,
+            "momentum": 1,
+            "opening": 1,
+            "ending": 1,
+            "duration": 1
+          },
+          "penalties": {
+            "filler": 0,
+            "repetition": 0.104,
+            "contextDependency": 0,
+            "boilerplate": 0
+          },
+          "componentTotal": 0.697,
+          "penaltyTotal": 0.0083,
+          "rationale": "Strongest on hook (0.91) and standing alone (0.85); weakest on curiosity."
+        },
+        {
+          "candidateId": "story-turn",
+          "overall": 0.6596,
+          "hook": 0.715,
+          "standalone": 0.77,
+          "emotion": 0.405,
+          "value": 0.587,
+          "components": {
+            "hook": 0.715,
+            "curiosity": 0.488,
+            "emotion": 0.405,
+            "information": 0.556,
+            "standalone": 0.77,
+            "payoff": 0.618,
+            "structure": 0.813,
+            "momentum": 1,
+            "opening": 0.7,
+            "ending": 1,
+            "duration": 1
+          },
+          "penalties": {
+            "filler": 0,
+            "repetition": 0,
+            "contextDependency": 0.35,
+            "boilerplate": 0
+          },
+          "componentTotal": 0.7016,
+          "penaltyTotal": 0.042,
+          "rationale": "Strongest on hook (0.71) and standing alone (0.77); weakest on curiosity. Penalised for context dependency (0.35)."
+        },
+        {
+          "candidateId": "story-lesson",
+          "overall": 0.7111,
+          "hook": 0.705,
+          "standalone": 0.825,
+          "emotion": 0.248,
+          "value": 0.613,
+          "components": {
+            "hook": 0.705,
+            "curiosity": 0.382,
+            "emotion": 0.248,
+            "information": 0.508,
+            "standalone": 0.825,
+            "payoff": 0.718,
+            "structure": 0.88,
+            "momentum": 1,
+            "opening": 1,
+            "ending": 1,
+            "duration": 1
+          },
+          "penalties": {
+            "filler": 0,
+            "repetition": 0,
+            "contextDependency": 0,
+            "boilerplate": 0
+          },
+          "componentTotal": 0.7111,
+          "penaltyTotal": 0,
+          "rationale": "Strongest on hook (0.70) and standing alone (0.82); weakest on emotional intensity."
+        },
+        {
+          "candidateId": "story-second",
+          "overall": 0.657,
+          "hook": 0.715,
+          "standalone": 0.695,
+          "emotion": 0.275,
+          "value": 0.709,
+          "components": {
+            "hook": 0.715,
+            "curiosity": 0.295,
+            "emotion": 0.275,
+            "information": 0.518,
+            "standalone": 0.695,
+            "payoff": 0.9,
+            "structure": 0.933,
+            "momentum": 1,
+            "opening": 0.7,
+            "ending": 1,
+            "duration": 1
+          },
+          "penalties": {
+            "filler": 0,
+            "repetition": 0,
+            "contextDependency": 0.35,
+            "boilerplate": 0
+          },
+          "componentTotal": 0.699,
+          "penaltyTotal": 0.042,
+          "rationale": "Strongest on hook (0.71) and payoff (0.90); weakest on curiosity. Penalised for context dependency (0.35)."
+        }
+      ],
+      "ranking": {
+        "selected": [
+          {
+            "rank": 1,
+            "candidateId": "story-lesson",
+            "title": "What the night taught me",
+            "topic": "What the night taught me",
+            "startSec": 101.428,
+            "endSec": 140.635,
+            "durationSec": 39.207,
+            "overall": 0.7111,
+            "diversityDiscount": 0,
+            "opening": {
+              "hook": 0.705,
+              "opening": 1,
+              "hookQuote": "A woman driving a livestock trailer stopped without me even lifting a hand.",
+              "quoteOpensClip": true,
+              "startsOnSentence": true,
+              "opensOnBoilerplate": false,
+              "opensOnContinuation": false,
+              "firstSentenceComplete": true,
+              "firstSentenceWordCount": 13
+            },
+            "landing": {
+              "payoff": 0.718,
+              "ending": 1,
+              "endsOnSentence": true,
+              "endsOnSentencePunctuation": true,
+              "endsOnDanglingWord": false,
+              "closingPayoffHits": 0
+            }
+          },
+          {
+            "rank": 2,
+            "candidateId": "story-setup",
+            "title": "Lost above the treeline",
+            "topic": "Lost above the treeline",
+            "startSec": 0,
+            "endSec": 36.597,
+            "durationSec": 36.597,
+            "overall": 0.6887,
+            "diversityDiscount": 0.0064,
+            "opening": {
+              "hook": 0.91,
+              "opening": 1,
+              "hookQuote": "I got lost in the Cairngorms when I was nineteen years old.",
+              "quoteOpensClip": true,
+              "startsOnSentence": true,
+              "opensOnBoilerplate": false,
+              "opensOnContinuation": false,
+              "firstSentenceComplete": true,
+              "firstSentenceWordCount": 12
+            },
+            "landing": {
+              "payoff": 0.318,
+              "ending": 1,
+              "endsOnSentence": true,
+              "endsOnSentencePunctuation": true,
+              "endsOnDanglingWord": false,
+              "closingPayoffHits": 0
+            }
+          },
+          {
+            "rank": 3,
+            "candidateId": "story-turn",
+            "title": "Stopping to think",
+            "topic": "Stopping to think",
+            "startSec": 50.871,
+            "endSec": 87.034,
+            "durationSec": 36.163,
+            "overall": 0.6596,
+            "diversityDiscount": 0.0161,
+            "opening": {
+              "hook": 0.715,
+              "opening": 0.7,
+              "hookQuote": "So I did the only sensible thing anybody had ever taught me.",
+              "quoteOpensClip": true,
+              "startsOnSentence": true,
+              "opensOnBoilerplate": false,
+              "opensOnContinuation": true,
+              "firstSentenceComplete": true,
+              "firstSentenceWordCount": 12
+            },
+            "landing": {
+              "payoff": 0.618,
+              "ending": 1,
+              "endsOnSentence": true,
+              "endsOnSentencePunctuation": true,
+              "endsOnDanglingWord": false,
+              "closingPayoffHits": 0
+            }
+          }
+        ],
+        "rejections": [
+          {
+            "candidateId": "story-second",
+            "code": "beyond_limit",
+            "reason": "Ranked below the top 3."
+          }
+        ]
+      },
+      "diversity": {
+        "pairs": [
+          {
+            "a": "story-lesson",
+            "b": "story-setup",
+            "textSimilarity": 0.0267,
+            "overlapRatio": 0,
+            "timelineProximity": 0.2797,
+            "sameTopic": false,
+            "gapSec": 64.831
+          },
+          {
+            "a": "story-lesson",
+            "b": "story-turn",
+            "textSimilarity": 0.0353,
+            "overlapRatio": 0,
+            "timelineProximity": 0.8401,
+            "sameTopic": false,
+            "gapSec": 14.394
+          },
+          {
+            "a": "story-setup",
+            "b": "story-turn",
+            "textSimilarity": 0.0139,
+            "overlapRatio": 0,
+            "timelineProximity": 0.8414,
+            "sameTopic": false,
+            "gapSec": 14.274
+          }
+        ],
+        "maxTextSimilarity": 0.0353,
+        "maxOverlapRatio": 0,
+        "maxTimelineProximity": 0.8414,
+        "distinctTopics": 3,
+        "minGapSec": 14.274,
+        "timelineSpread": 0.7595
+      },
+      "funnel": [
+        {
+          "candidateId": "story-setup",
+          "note": "Great hook, no resolution. Tests whether a setup can win on its opening alone.",
+          "outcome": "selected",
+          "stage": "ranking",
+          "detail": "Ranked 2 at 0.6887."
+        },
+        {
+          "candidateId": "story-turn",
+          "note": "The moment that actually resolves something.",
+          "outcome": "selected",
+          "stage": "ranking",
+          "detail": "Ranked 3 at 0.6596."
+        },
+        {
+          "candidateId": "story-turn-late",
+          "note": "Overlaps story-turn. Only one of the pair may be selected.",
+          "outcome": "not-preselected",
+          "stage": "preselection",
+          "detail": "Outside the build budget of 4."
+        },
+        {
+          "candidateId": "story-lesson",
+          "note": "Lands explicitly. Ends on a line that points forward, which should cost it.",
+          "outcome": "selected",
+          "stage": "ranking",
+          "detail": "Ranked 1 at 0.7111."
+        },
+        {
+          "candidateId": "story-second",
+          "note": "Distinct material for the third slot.",
+          "outcome": "ranked-out",
+          "stage": "ranking",
+          "detail": "beyond_limit: Ranked below the top 3."
+        },
+        {
+          "candidateId": "story-fragment",
+          "note": "Around ten seconds of speech. Must be rejected as too short.",
+          "outcome": "rejected",
+          "stage": "discovery",
+          "detail": "too_short: Moment is 10.9s, below the 20s minimum."
+        }
+      ]
+    },
+    {
+      "fixtureId": "opinion-debate",
+      "genre": "opinion-debate",
+      "title": "Debate: is remote work overrated?",
+      "description": "Fast two-way disagreement in short turns, where most moments open on a rebuttal to something outside the clip, plus a draft pointing outside the media.",
+      "media": {
+        "durationSec": 160.919,
+        "segmentCount": 38,
+        "wordCount": 449,
+        "wordsPerSecond": 3
+      },
+      "discovery": {
+        "proposed": 6,
+        "accepted": 5,
+        "rejected": 1,
+        "rejections": [
+          {
+            "candidateId": "deb-off-media",
+            "code": "outside_media",
+            "reason": "Range falls outside the media duration of 160.919s."
+          }
+        ]
+      },
+      "preselection": {
+        "budget": 4,
+        "considered": 5,
+        "preselected": 4,
+        "skipped": 1,
+        "readings": [
+          {
+            "candidateId": "deb-claim",
+            "confidence": 0.8,
+            "textPromise": 0.7211,
+            "promise": 0.7526,
+            "selected": true,
+            "signals": {
+              "hook": 0.795,
+              "opening": 1,
+              "ending": 1,
+              "payoff": 0.148,
+              "duration": 1,
+              "boilerplate": 0,
+              "filler": 0,
+              "contextDependency": 0
+            }
+          },
+          {
+            "candidateId": "deb-numbers",
+            "confidence": 0.68,
+            "textPromise": 0.771,
+            "promise": 0.7346,
+            "selected": true,
+            "signals": {
+              "hook": 0.683,
+              "opening": 1,
+              "ending": 1,
+              "payoff": 0.5,
+              "duration": 1,
+              "boilerplate": 0,
+              "filler": 0.085,
+              "contextDependency": 0
+            }
+          },
+          {
+            "candidateId": "deb-numbers-shifted",
+            "confidence": 0.65,
+            "textPromise": 0.7478,
+            "promise": 0.7087,
+            "selected": false,
+            "signals": {
+              "hook": 0.683,
+              "opening": 1,
+              "ending": 1,
+              "payoff": 0.41,
+              "duration": 1,
+              "boilerplate": 0,
+              "filler": 0.084,
+              "contextDependency": 0
+            }
+          },
+          {
+            "candidateId": "deb-rebuttal",
+            "confidence": 0.72,
+            "textPromise": 0.5909,
+            "promise": 0.6425,
+            "selected": true,
+            "signals": {
+              "hook": 0.67,
+              "opening": 0.625,
+              "ending": 1,
+              "payoff": 0.338,
+              "duration": 1,
+              "boilerplate": 0,
+              "filler": 0,
+              "contextDependency": 0.47
+            }
+          },
+          {
+            "candidateId": "deb-agreement",
+            "confidence": 0.62,
+            "textPromise": 0.651,
+            "promise": 0.6386,
+            "selected": true,
+            "signals": {
+              "hook": 0.67,
+              "opening": 1,
+              "ending": 0.6,
+              "payoff": 0.41,
+              "duration": 1,
+              "boilerplate": 0,
+              "filler": 0.147,
+              "contextDependency": 0.12
+            }
+          }
+        ]
+      },
+      "construction": {
+        "built": 4,
+        "accepted": 4,
+        "rejected": 0,
+        "rejections": [],
+        "clips": [
+          {
+            "candidateId": "deb-claim",
+            "startSec": 0,
+            "endSec": 34.751,
+            "durationSec": 34.751,
+            "withinTargetWindow": true,
+            "wordCount": 99,
+            "wordsPerSecond": 2.849,
+            "maxGapSec": 0.25,
+            "segmentCount": 8,
+            "boundaries": {
+              "startSnap": "word",
+              "endSnap": "word",
+              "startsOnSentence": true,
+              "endsOnSentence": true,
+              "startShiftSec": 0,
+              "endShiftSec": 0,
+              "notes": []
+            },
+            "title": "Remote work and juniors",
+            "hookQuote": "I think remote work is the most overrated idea of the last five years.",
+            "aiAssisted": false
+          },
+          {
+            "candidateId": "deb-rebuttal",
+            "startSec": 39.918,
+            "endSec": 71.001,
+            "durationSec": 31.083,
+            "withinTargetWindow": true,
+            "wordCount": 88,
+            "wordsPerSecond": 2.831,
+            "maxGapSec": 0.25,
+            "segmentCount": 8,
+            "boundaries": {
+              "startSnap": "word",
+              "endSnap": "word",
+              "startsOnSentence": true,
+              "endsOnSentence": true,
+              "startShiftSec": 0,
+              "endShiftSec": 0,
+              "notes": []
+            },
+            "title": "Artefacts versus correction",
+            "hookQuote": "So remote work created the artefact that you say remote work cannot produce.",
+            "aiAssisted": false
+          },
+          {
+            "candidateId": "deb-numbers",
+            "startSec": 75.168,
+            "endSec": 109.586,
+            "durationSec": 34.418,
+            "withinTargetWindow": true,
+            "wordCount": 98,
+            "wordsPerSecond": 2.847,
+            "maxGapSec": 0.25,
+            "segmentCount": 8,
+            "boundaries": {
+              "startSnap": "word",
+              "endSnap": "word",
+              "startsOnSentence": true,
+              "endsOnSentence": true,
+              "startShiftSec": 0,
+              "endShiftSec": 0,
+              "notes": []
+            },
+            "title": "What the numbers showed",
+            "hookQuote": "Or your remote onboarding was bad and you measured the wrong thing.",
+            "aiAssisted": false
+          },
+          {
+            "candidateId": "deb-agreement",
+            "startSec": 119.002,
+            "endSec": 158.919,
+            "durationSec": 39.917,
+            "withinTargetWindow": true,
+            "wordCount": 113,
+            "wordsPerSecond": 2.831,
+            "maxGapSec": 0.25,
+            "segmentCount": 10,
+            "boundaries": {
+              "startSnap": "word",
+              "endSnap": "word",
+              "startsOnSentence": true,
+              "endsOnSentence": true,
+              "startShiftSec": 0,
+              "endShiftSec": 0,
+              "notes": []
+            },
+            "title": "Where they agree",
+            "hookQuote": "We used to call it apprenticeship and we paid people badly for it.",
+            "aiAssisted": false
+          }
+        ]
+      },
+      "scoring": [
+        {
+          "candidateId": "deb-claim",
+          "overall": 0.7044,
+          "hook": 0.89,
+          "standalone": 0.875,
+          "emotion": 0.358,
+          "value": 0.392,
+          "components": {
+            "hook": 0.89,
+            "curiosity": 0.295,
+            "emotion": 0.358,
+            "information": 0.469,
+            "standalone": 0.875,
+            "payoff": 0.316,
+            "structure": 0.875,
+            "momentum": 1,
+            "opening": 1,
+            "ending": 1,
+            "duration": 1
+          },
+          "penalties": {
+            "filler": 0,
+            "repetition": 0.041,
+            "contextDependency": 0,
+            "boilerplate": 0
+          },
+          "componentTotal": 0.7076,
+          "penaltyTotal": 0.0033,
+          "rationale": "Strongest on hook (0.89) and standing alone (0.88); weakest on curiosity."
+        },
+        {
+          "candidateId": "deb-rebuttal",
+          "overall": 0.584,
+          "hook": 0.705,
+          "standalone": 0.559,
+          "emotion": 0.33,
+          "value": 0.421,
+          "components": {
+            "hook": 0.705,
+            "curiosity": 0.575,
+            "emotion": 0.33,
+            "information": 0.518,
+            "standalone": 0.559,
+            "payoff": 0.323,
+            "structure": 0.813,
+            "momentum": 1,
+            "opening": 0.7,
+            "ending": 1,
+            "duration": 1
+          },
+          "penalties": {
+            "filler": 0,
+            "repetition": 0,
+            "contextDependency": 0.47,
+            "boilerplate": 0
+          },
+          "componentTotal": 0.6404,
+          "penaltyTotal": 0.0564,
+          "rationale": "Strongest on hook (0.70) and structure (0.81); weakest on payoff. Penalised for context dependency (0.47)."
+        },
+        {
+          "candidateId": "deb-numbers",
+          "overall": 0.7119,
+          "hook": 0.715,
+          "standalone": 0.775,
+          "emotion": 0.248,
+          "value": 0.598,
+          "components": {
+            "hook": 0.715,
+            "curiosity": 0.575,
+            "emotion": 0.248,
+            "information": 0.623,
+            "standalone": 0.775,
+            "payoff": 0.573,
+            "structure": 0.88,
+            "momentum": 1,
+            "opening": 1,
+            "ending": 1,
+            "duration": 1
+          },
+          "penalties": {
+            "filler": 0.085,
+            "repetition": 0,
+            "contextDependency": 0,
+            "boilerplate": 0
+          },
+          "componentTotal": 0.7204,
+          "penaltyTotal": 0.0085,
+          "rationale": "Strongest on hook (0.71) and standing alone (0.78); weakest on emotional intensity."
+        },
+        {
+          "candidateId": "deb-agreement",
+          "overall": 0.6479,
+          "hook": 0.705,
+          "standalone": 0.764,
+          "emotion": 0.303,
+          "value": 0.508,
+          "components": {
+            "hook": 0.705,
+            "curiosity": 0.333,
+            "emotion": 0.303,
+            "information": 0.488,
+            "standalone": 0.764,
+            "payoff": 0.528,
+            "structure": 0.8,
+            "momentum": 1,
+            "opening": 1,
+            "ending": 1,
+            "duration": 1
+          },
+          "penalties": {
+            "filler": 0.147,
+            "repetition": 0,
+            "contextDependency": 0.12,
+            "boilerplate": 0
+          },
+          "componentTotal": 0.677,
+          "penaltyTotal": 0.0291,
+          "rationale": "Strongest on hook (0.70) and standing alone (0.76); weakest on curiosity. Penalised for filler (0.15), context dependency (0.12)."
+        }
+      ],
+      "ranking": {
+        "selected": [
+          {
+            "rank": 1,
+            "candidateId": "deb-numbers",
+            "title": "What the numbers showed",
+            "topic": "What the numbers showed",
+            "startSec": 75.168,
+            "endSec": 109.586,
+            "durationSec": 34.418,
+            "overall": 0.7119,
+            "diversityDiscount": 0,
+            "opening": {
+              "hook": 0.715,
+              "opening": 1,
+              "hookQuote": "Or your remote onboarding was bad and you measured the wrong thing.",
+              "quoteOpensClip": true,
+              "startsOnSentence": true,
+              "opensOnBoilerplate": false,
+              "opensOnContinuation": false,
+              "firstSentenceComplete": true,
+              "firstSentenceWordCount": 12
+            },
+            "landing": {
+              "payoff": 0.573,
+              "ending": 1,
+              "endsOnSentence": true,
+              "endsOnSentencePunctuation": true,
+              "endsOnDanglingWord": false,
+              "closingPayoffHits": 0
+            }
+          },
+          {
+            "rank": 2,
+            "candidateId": "deb-claim",
+            "title": "Remote work and juniors",
+            "topic": "Remote work and juniors",
+            "startSec": 0,
+            "endSec": 34.751,
+            "durationSec": 34.751,
+            "overall": 0.7044,
+            "diversityDiscount": 0.0137,
+            "opening": {
+              "hook": 0.89,
+              "opening": 1,
+              "hookQuote": "I think remote work is the most overrated idea of the last five years.",
+              "quoteOpensClip": true,
+              "startsOnSentence": true,
+              "opensOnBoilerplate": false,
+              "opensOnContinuation": false,
+              "firstSentenceComplete": true,
+              "firstSentenceWordCount": 14
+            },
+            "landing": {
+              "payoff": 0.316,
+              "ending": 1,
+              "endsOnSentence": true,
+              "endsOnSentencePunctuation": true,
+              "endsOnDanglingWord": false,
+              "closingPayoffHits": 0
+            }
+          },
+          {
+            "rank": 3,
+            "candidateId": "deb-agreement",
+            "title": "Where they agree",
+            "topic": "Where they agree",
+            "startSec": 119.002,
+            "endSec": 158.919,
+            "durationSec": 39.917,
+            "overall": 0.6479,
+            "diversityDiscount": 0.0192,
+            "opening": {
+              "hook": 0.705,
+              "opening": 1,
+              "hookQuote": "We used to call it apprenticeship and we paid people badly for it.",
+              "quoteOpensClip": true,
+              "startsOnSentence": true,
+              "opensOnBoilerplate": false,
+              "opensOnContinuation": false,
+              "firstSentenceComplete": true,
+              "firstSentenceWordCount": 13
+            },
+            "landing": {
+              "payoff": 0.528,
+              "ending": 1,
+              "endsOnSentence": true,
+              "endsOnSentencePunctuation": true,
+              "endsOnDanglingWord": true,
+              "closingPayoffHits": 0
+            }
+          }
+        ],
+        "rejections": [
+          {
+            "candidateId": "deb-rebuttal",
+            "code": "beyond_limit",
+            "reason": "Ranked below the top 3."
+          }
+        ]
+      },
+      "diversity": {
+        "pairs": [
+          {
+            "a": "deb-numbers",
+            "b": "deb-claim",
+            "textSimilarity": 0.0667,
+            "overlapRatio": 0,
+            "timelineProximity": 0.5509,
+            "sameTopic": false,
+            "gapSec": 40.417
+          },
+          {
+            "a": "deb-numbers",
+            "b": "deb-agreement",
+            "textSimilarity": 0.0659,
+            "overlapRatio": 0,
+            "timelineProximity": 0.8954,
+            "sameTopic": false,
+            "gapSec": 9.416
+          },
+          {
+            "a": "deb-claim",
+            "b": "deb-agreement",
+            "textSimilarity": 0.043,
+            "overlapRatio": 0,
+            "timelineProximity": 0.0639,
+            "sameTopic": false,
+            "gapSec": 84.251
+          }
+        ],
+        "maxTextSimilarity": 0.0667,
+        "maxOverlapRatio": 0,
+        "maxTimelineProximity": 0.8954,
+        "distinctTopics": 3,
+        "minGapSec": 9.416,
+        "timelineSpread": 0.9876
+      },
+      "funnel": [
+        {
+          "candidateId": "deb-claim",
+          "note": "Opens on the thesis. The most quotable start in the file.",
+          "outcome": "selected",
+          "stage": "ranking",
+          "detail": "Ranked 2 at 0.7044."
+        },
+        {
+          "candidateId": "deb-rebuttal",
+          "note": "Opens mid-rebuttal, on \"And they only wrote it down\". Standing alone is the weak point.",
+          "outcome": "ranked-out",
+          "stage": "ranking",
+          "detail": "beyond_limit: Ranked below the top 3."
+        },
+        {
+          "candidateId": "deb-numbers",
+          "note": "The only numeric evidence in the debate.",
+          "outcome": "selected",
+          "stage": "ranking",
+          "detail": "Ranked 1 at 0.7119."
+        },
+        {
+          "candidateId": "deb-numbers-shifted",
+          "note": "Overlaps deb-numbers almost completely.",
+          "outcome": "not-preselected",
+          "stage": "preselection",
+          "detail": "Outside the build budget of 4."
+        },
+        {
+          "candidateId": "deb-agreement",
+          "note": "The clearest landing in the file.",
+          "outcome": "selected",
+          "stage": "ranking",
+          "detail": "Ranked 3 at 0.6479."
+        },
+        {
+          "candidateId": "deb-off-media",
+          "note": "Outside the media. Must be rejected before anything is built.",
+          "outcome": "rejected",
+          "stage": "discovery",
+          "detail": "outside_media: Range falls outside the media duration of 160.919s."
+        }
+      ]
+    },
+    {
+      "fixtureId": "fast-conversational",
+      "genre": "fast-conversational",
+      "title": "Two friends: quitting without a plan",
+      "description": "Rapid two-way conversation in two-second turns, with a plug dropped into the middle of the best exchange and a four-line moment too short to build.",
+      "media": {
+        "durationSec": 106.785,
+        "segmentCount": 44,
+        "wordCount": 413,
+        "wordsPerSecond": 4.2
+      },
+      "discovery": {
+        "proposed": 6,
+        "accepted": 5,
+        "rejected": 1,
+        "rejections": [
+          {
+            "candidateId": "fast-snippet",
+            "code": "too_short",
+            "reason": "Moment is 9.3s, below the 20s minimum."
+          }
+        ]
+      },
+      "preselection": {
+        "budget": 4,
+        "considered": 5,
+        "preselected": 4,
+        "skipped": 1,
+        "readings": [
+          {
+            "candidateId": "fast-weld",
+            "confidence": 0.7,
+            "textPromise": 0.8243,
+            "promise": 0.7746,
+            "selected": true,
+            "signals": {
+              "hook": 0.863,
+              "opening": 1,
+              "ending": 1,
+              "payoff": 0.5,
+              "duration": 1,
+              "boilerplate": 0,
+              "filler": 0.061,
+              "contextDependency": 0
+            }
+          },
+          {
+            "candidateId": "fast-quit",
+            "confidence": 0.78,
+            "textPromise": 0.6942,
+            "promise": 0.7285,
+            "selected": true,
+            "signals": {
+              "hook": 1,
+              "opening": 1,
+              "ending": 0.6,
+              "payoff": 0.238,
+              "duration": 1,
+              "boilerplate": 0,
+              "filler": 0.184,
+              "contextDependency": 0.12
+            }
+          },
+          {
+            "candidateId": "fast-plug",
+            "confidence": 0.74,
+            "textPromise": 0.7078,
+            "promise": 0.7207,
+            "selected": true,
+            "signals": {
+              "hook": 0.683,
+              "opening": 1,
+              "ending": 1,
+              "payoff": 0.5,
+              "duration": 0.844,
+              "boilerplate": 0,
+              "filler": 0.25,
+              "contextDependency": 0.12
+            }
+          },
+          {
+            "candidateId": "fast-weld-wide",
+            "confidence": 0.66,
+            "textPromise": 0.7162,
+            "promise": 0.6937,
+            "selected": false,
+            "signals": {
+              "hook": 0.683,
+              "opening": 1,
+              "ending": 1,
+              "payoff": 0.41,
+              "duration": 1,
+              "boilerplate": 0,
+              "filler": 0.167,
+              "contextDependency": 0.12
+            }
+          },
+          {
+            "candidateId": "fast-ending",
+            "confidence": 0.6,
+            "textPromise": 0.6719,
+            "promise": 0.6432,
+            "selected": true,
+            "signals": {
+              "hook": 0.863,
+              "opening": 0.625,
+              "ending": 1,
+              "payoff": 0.5,
+              "duration": 0.875,
+              "boilerplate": 0,
+              "filler": 0.16,
+              "contextDependency": 0.35
+            }
+          }
+        ]
+      },
+      "construction": {
+        "built": 4,
+        "accepted": 4,
+        "rejected": 0,
+        "rejections": [],
+        "clips": [
+          {
+            "candidateId": "fast-quit",
+            "startSec": 0,
+            "endSec": 34.633,
+            "durationSec": 34.633,
+            "withinTargetWindow": true,
+            "wordCount": 136,
+            "wordsPerSecond": 3.927,
+            "maxGapSec": 0.15,
+            "segmentCount": 16,
+            "boundaries": {
+              "startSnap": "word",
+              "endSnap": "word",
+              "startsOnSentence": true,
+              "endsOnSentence": true,
+              "startShiftSec": 0,
+              "endShiftSec": 0,
+              "notes": []
+            },
+            "title": "Quitting on Monday",
+            "hookQuote": "Okay so you actually did it, you quit on Monday?",
+            "aiAssisted": false
+          },
+          {
+            "candidateId": "fast-weld",
+            "startSec": 34.783,
+            "endSec": 68.964,
+            "durationSec": 34.181,
+            "withinTargetWindow": true,
+            "wordCount": 136,
+            "wordsPerSecond": 3.979,
+            "maxGapSec": 0.15,
+            "segmentCount": 13,
+            "boundaries": {
+              "startSnap": "word",
+              "endSnap": "word",
+              "startsOnSentence": true,
+              "endsOnSentence": true,
+              "startShiftSec": 0,
+              "endShiftSec": 0,
+              "notes": []
+            },
+            "title": "Learning to weld",
+            "hookQuote": "What are you going to do first?",
+            "aiAssisted": false
+          },
+          {
+            "candidateId": "fast-plug",
+            "startSec": 69.114,
+            "endSec": 100.199,
+            "durationSec": 31.085,
+            "withinTargetWindow": true,
+            "wordCount": 123,
+            "wordsPerSecond": 3.957,
+            "maxGapSec": 0.15,
+            "segmentCount": 13,
+            "boundaries": {
+              "startSnap": "word",
+              "endSnap": "word",
+              "startsOnSentence": true,
+              "endsOnSentence": true,
+              "startShiftSec": 0,
+              "endShiftSec": 5.776,
+              "notes": []
+            },
+            "title": "The plan",
+            "hookQuote": "Okay, that one is going on a poster.",
+            "aiAssisted": false
+          },
+          {
+            "candidateId": "fast-ending",
+            "startSec": 78.524,
+            "endSec": 104.785,
+            "durationSec": 26.261,
+            "withinTargetWindow": false,
+            "wordCount": 104,
+            "wordsPerSecond": 3.96,
+            "maxGapSec": 0.15,
+            "segmentCount": 11,
+            "boundaries": {
+              "startSnap": "word",
+              "endSnap": "word",
+              "startsOnSentence": true,
+              "endsOnSentence": true,
+              "startShiftSec": 0,
+              "endShiftSec": 0,
+              "notes": []
+            },
+            "title": "One year",
+            "hookQuote": "Anyway, where were we?",
+            "aiAssisted": false
+          }
+        ]
+      },
+      "scoring": [
+        {
+          "candidateId": "fast-quit",
+          "overall": 0.7298,
+          "hook": 1,
+          "standalone": 0.839,
+          "emotion": 0.535,
+          "value": 0.387,
+          "components": {
+            "hook": 1,
+            "curiosity": 0.738,
+            "emotion": 0.535,
+            "information": 0.455,
+            "standalone": 0.839,
+            "payoff": 0.318,
+            "structure": 0.8,
+            "momentum": 0.936,
+            "opening": 1,
+            "ending": 1,
+            "duration": 1
+          },
+          "penalties": {
+            "filler": 0.184,
+            "repetition": 0,
+            "contextDependency": 0.12,
+            "boilerplate": 0
+          },
+          "componentTotal": 0.7626,
+          "penaltyTotal": 0.0328,
+          "rationale": "Strongest on hook (1.00) and standing alone (0.84); weakest on payoff. Penalised for filler (0.18), context dependency (0.12)."
+        },
+        {
+          "candidateId": "fast-weld",
+          "overall": 0.7744,
+          "hook": 0.805,
+          "standalone": 0.85,
+          "emotion": 0.44,
+          "value": 0.593,
+          "components": {
+            "hook": 0.805,
+            "curiosity": 0.913,
+            "emotion": 0.44,
+            "information": 0.469,
+            "standalone": 0.85,
+            "payoff": 0.718,
+            "structure": 0.876,
+            "momentum": 0.926,
+            "opening": 1,
+            "ending": 1,
+            "duration": 1
+          },
+          "penalties": {
+            "filler": 0.061,
+            "repetition": 0.03,
+            "contextDependency": 0,
+            "boilerplate": 0
+          },
+          "componentTotal": 0.7829,
+          "penaltyTotal": 0.0085,
+          "rationale": "Strongest on hook (0.81) and standing alone (0.85); weakest on duration fit."
+        },
+        {
+          "candidateId": "fast-plug",
+          "overall": 0.6491,
+          "hook": 0.715,
+          "standalone": 0.739,
+          "emotion": 0.33,
+          "value": 0.465,
+          "components": {
+            "hook": 0.715,
+            "curiosity": 0.738,
+            "emotion": 0.33,
+            "information": 0.415,
+            "standalone": 0.739,
+            "payoff": 0.515,
+            "structure": 0.792,
+            "momentum": 0.931,
+            "opening": 1,
+            "ending": 1,
+            "duration": 1
+          },
+          "penalties": {
+            "filler": 0.271,
+            "repetition": 0.066,
+            "contextDependency": 0.12,
+            "boilerplate": 0
+          },
+          "componentTotal": 0.6959,
+          "penaltyTotal": 0.0468,
+          "rationale": "Strongest on hook (0.71) and standing alone (0.74); weakest on emotional intensity. Penalised for filler (0.27), context dependency (0.12)."
+        },
+        {
+          "candidateId": "fast-ending",
+          "overall": 0.609,
+          "hook": 0.805,
+          "standalone": 0.645,
+          "emotion": 0.303,
+          "value": 0.464,
+          "components": {
+            "hook": 0.805,
+            "curiosity": 0.738,
+            "emotion": 0.303,
+            "information": 0.399,
+            "standalone": 0.645,
+            "payoff": 0.528,
+            "structure": 0.808,
+            "momentum": 0.93,
+            "opening": 0.7,
+            "ending": 1,
+            "duration": 0.751
+          },
+          "penalties": {
+            "filler": 0.16,
+            "repetition": 0.039,
+            "contextDependency": 0.35,
+            "boilerplate": 0
+          },
+          "componentTotal": 0.6701,
+          "penaltyTotal": 0.0611,
+          "rationale": "Strongest on hook (0.81) and standing alone (0.65); weakest on duration fit. Penalised for context dependency (0.35), filler (0.16)."
+        }
+      ],
+      "ranking": {
+        "selected": [
+          {
+            "rank": 1,
+            "candidateId": "fast-weld",
+            "title": "Learning to weld",
+            "topic": "Learning to weld",
+            "startSec": 34.783,
+            "endSec": 68.964,
+            "durationSec": 34.181,
+            "overall": 0.7744,
+            "diversityDiscount": 0,
+            "opening": {
+              "hook": 0.805,
+              "opening": 1,
+              "hookQuote": "What are you going to do first?",
+              "quoteOpensClip": true,
+              "startsOnSentence": true,
+              "opensOnBoilerplate": false,
+              "opensOnContinuation": false,
+              "firstSentenceComplete": true,
+              "firstSentenceWordCount": 7
+            },
+            "landing": {
+              "payoff": 0.718,
+              "ending": 1,
+              "endsOnSentence": true,
+              "endsOnSentencePunctuation": true,
+              "endsOnDanglingWord": false,
+              "closingPayoffHits": 0
+            }
+          },
+          {
+            "rank": 2,
+            "candidateId": "fast-quit",
+            "title": "Quitting on Monday",
+            "topic": "Quitting on Monday",
+            "startSec": 0,
+            "endSec": 34.633,
+            "durationSec": 34.633,
+            "overall": 0.7298,
+            "diversityDiscount": 0.0192,
+            "opening": {
+              "hook": 1,
+              "opening": 1,
+              "hookQuote": "Okay so you actually did it, you quit on Monday?",
+              "quoteOpensClip": true,
+              "startsOnSentence": true,
+              "opensOnBoilerplate": false,
+              "opensOnContinuation": false,
+              "firstSentenceComplete": true,
+              "firstSentenceWordCount": 10
+            },
+            "landing": {
+              "payoff": 0.318,
+              "ending": 1,
+              "endsOnSentence": true,
+              "endsOnSentencePunctuation": true,
+              "endsOnDanglingWord": true,
+              "closingPayoffHits": 0
+            }
+          },
+          {
+            "rank": 3,
+            "candidateId": "fast-plug",
+            "title": "The plan",
+            "topic": "The plan",
+            "startSec": 69.114,
+            "endSec": 100.199,
+            "durationSec": 31.085,
+            "overall": 0.6491,
+            "diversityDiscount": 0.0244,
+            "opening": {
+              "hook": 0.715,
+              "opening": 1,
+              "hookQuote": "Okay, that one is going on a poster.",
+              "quoteOpensClip": true,
+              "startsOnSentence": true,
+              "opensOnBoilerplate": false,
+              "opensOnContinuation": false,
+              "firstSentenceComplete": true,
+              "firstSentenceWordCount": 8
+            },
+            "landing": {
+              "payoff": 0.515,
+              "ending": 1,
+              "endsOnSentence": true,
+              "endsOnSentencePunctuation": true,
+              "endsOnDanglingWord": true,
+              "closingPayoffHits": 0
+            }
+          }
+        ],
+        "rejections": [
+          {
+            "candidateId": "fast-ending",
+            "code": "beyond_limit",
+            "reason": "Ranked below the top 3."
+          }
+        ]
+      },
+      "diversity": {
+        "pairs": [
+          {
+            "a": "fast-weld",
+            "b": "fast-quit",
+            "textSimilarity": 0.0442,
+            "overlapRatio": 0,
+            "timelineProximity": 0.9983,
+            "sameTopic": false,
+            "gapSec": 0.15
+          },
+          {
+            "a": "fast-weld",
+            "b": "fast-plug",
+            "textSimilarity": 0.1089,
+            "overlapRatio": 0,
+            "timelineProximity": 0.9983,
+            "sameTopic": false,
+            "gapSec": 0.15
+          },
+          {
+            "a": "fast-quit",
+            "b": "fast-plug",
+            "textSimilarity": 0.1154,
+            "overlapRatio": 0,
+            "timelineProximity": 0.6169,
+            "sameTopic": false,
+            "gapSec": 34.481
+          }
+        ],
+        "maxTextSimilarity": 0.1154,
+        "maxOverlapRatio": 0,
+        "maxTimelineProximity": 0.9983,
+        "distinctTopics": 3,
+        "minGapSec": 0.15,
+        "timelineSpread": 0.9383
+      },
+      "funnel": [
+        {
+          "candidateId": "fast-quit",
+          "note": "Opens on a direct question. Should rank highly.",
+          "outcome": "selected",
+          "stage": "ranking",
+          "detail": "Ranked 2 at 0.7298."
+        },
+        {
+          "candidateId": "fast-weld",
+          "note": "The emotional centre of the conversation.",
+          "outcome": "selected",
+          "stage": "ranking",
+          "detail": "Ranked 1 at 0.7744."
+        },
+        {
+          "candidateId": "fast-weld-wide",
+          "note": "Overlaps fast-weld and runs into the podcast plug.",
+          "outcome": "not-preselected",
+          "stage": "preselection",
+          "detail": "Outside the build budget of 4."
+        },
+        {
+          "candidateId": "fast-plug",
+          "note": "Carries a follow-the-podcast plug in the middle. Should be marked down, not banned.",
+          "outcome": "selected",
+          "stage": "ranking",
+          "detail": "Ranked 3 at 0.6491."
+        },
+        {
+          "candidateId": "fast-ending",
+          "note": "Opens on \"Anyway\", which should cost it on the opening axis.",
+          "outcome": "ranked-out",
+          "stage": "ranking",
+          "detail": "beyond_limit: Ranked below the top 3."
+        },
+        {
+          "candidateId": "fast-snippet",
+          "note": "Under twenty seconds of speech. Must be rejected as too short.",
+          "outcome": "rejected",
+          "stage": "discovery",
+          "detail": "too_short: Moment is 9.3s, below the 20s minimum."
+        }
+      ]
+    }
+  ],
+  "totals": {
+    "cases": 5,
+    "candidatesProposed": 31,
+    "candidatesAccepted": 26,
+    "candidatesRejected": 5,
+    "clipsBuilt": 20,
+    "clipsSelected": 15,
+    "meanSelectedOverall": 0.6918,
+    "meanSelectedDurationSec": 35.1209,
+    "withinTargetWindowShare": 1
+  }
+}

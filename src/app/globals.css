@@ -1,0 +1,66 @@
+@import 'tailwindcss';
+
+/* ViralForge design tokens. Dark-first: the product is a studio surface. */
+@theme {
+  --color-void: #07070b;
+  --color-surface: #0e0e14;
+  --color-surface-2: #14141d;
+  --color-line: #23232f;
+  --color-ink: #f4f4f7;
+  --color-ink-muted: #9a9aab;
+  --color-ink-faint: #63637a;
+
+  --color-forge-500: #7c5cff;
+  --color-forge-400: #9b82ff;
+  --color-ember-500: #ff5c8a;
+  --color-signal-500: #2ee6c5;
+
+  --font-sans: 'Inter var', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: ui-monospace, 'JetBrains Mono', 'Cascadia Code', monospace;
+
+  --radius-panel: 1.25rem;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-void);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Ambient forge glow behind the page content. */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(60rem 30rem at 12% -8%, rgb(124 92 255 / 0.22), transparent 70%),
+      radial-gradient(45rem 26rem at 95% 4%, rgb(46 230 197 / 0.12), transparent 70%),
+      radial-gradient(40rem 24rem at 60% 105%, rgb(255 92 138 / 0.1), transparent 70%);
+  }
+
+  ::selection {
+    background-color: rgb(124 92 255 / 0.35);
+  }
+}
+
+@utility panel {
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-panel);
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.04), rgb(255 255 255 / 0.01)),
+    var(--color-surface);
+  box-shadow: 0 1px 0 0 rgb(255 255 255 / 0.04) inset, 0 24px 60px -30px rgb(0 0 0 / 0.9);
+}
+
+@utility text-gradient {
+  background: linear-gradient(100deg, var(--color-ink) 10%, var(--color-forge-400) 55%, var(--color-signal-500));
+  background-clip: text;
+  color: transparent;
+}

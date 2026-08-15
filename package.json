@@ -1,0 +1,44 @@
+{
+  "name": "viralforge-ai",
+  "version": "2.0.0-phase2",
+  "private": true,
+  "description": "ViralForge AI 2.0 — turns long-form video into high-quality Shorts.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.9"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "bench": "vitest run tests/benchmark.test.ts",
+    "doctor": "node scripts/doctor.mjs",
+    "fetch:subject-model": "node scripts/fetch-subject-model.mjs"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.14.4",
+    "@grpc/proto-loader": "^0.8.1",
+    "next": "^15.5.4",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.13",
+    "@types/node": "^24.5.2",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "eslint": "^9.36.0",
+    "eslint-config-next": "^15.5.4",
+    "tailwindcss": "^4.1.13",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  },
+  "optionalDependencies": {
+    "onnxruntime-node": "^1.27.0"
+  }
+}
