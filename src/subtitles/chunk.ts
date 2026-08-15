@@ -25,12 +25,14 @@
  * Pure: words in, cues out, no clock and no I/O.
  */
 
-import type {
-  SubtitleOptions,
-  SubtitleSegment,
-  SubtitleSourceWord,
-  SubtitleTimingSource,
-  TranscriptSegmentId,
+import {
+  estimateTextUnits,
+  lineBudgetUnits,
+  type SubtitleOptions,
+  type SubtitleSegment,
+  type SubtitleSourceWord,
+  type SubtitleTimingSource,
+  type TranscriptSegmentId,
 } from '@/domain';
 
 export interface ChunkConfig {
@@ -248,11 +250,14 @@ function materialize(groups: readonly Group[], config: ChunkConfig): SubtitleSeg
  *
  * Greedy fill, and words are never split: a word longer than the line budget
  * overflows its line rather than being hyphenated, because hyphenating is
- * editing. The layout's character estimate errs low, so the overflow it produces
- * is a line slightly wider than intended, not text past the safe area.
+ * editing. Fit is measured with `estimateTextUnits` rather than by counting
+ * characters, because a proportional font makes those two very different
+ * questions — 22 narrow characters fit comfortably where 22 wide ones run off
+ * the frame entirely.
  */
 export function layoutLines(texts: readonly string[], maxCharsPerLine: number): string[] {
-  const budget = Number.isFinite(maxCharsPerLine) && maxCharsPerLine > 0 ? maxCharsPerLine : Infinity;
+  const usable = Number.isFinite(maxCharsPerLine) && maxCharsPerLine > 0;
+  const budget = usable ? lineBudgetUnits(maxCharsPerLine) : Infinity;
   const lines: string[] = [];
   let current = '';
 
@@ -263,7 +268,7 @@ export function layoutLines(texts: readonly string[], maxCharsPerLine: number): 
     }
 
     const candidate = `${current} ${text}`;
-    if (candidate.length > budget) {
+    if (estimateTextUnits(candidate) > budget) {
       lines.push(current);
       current = text;
     } else {

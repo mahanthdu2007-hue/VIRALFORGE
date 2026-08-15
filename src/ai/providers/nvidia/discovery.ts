@@ -22,6 +22,8 @@ Look for: strong opening statements, curiosity, emotional intensity, surprising 
 
 Avoid: greetings, introductions and sign-offs, filler, long pauses, repetition, incomplete thoughts, and anything that only makes sense with context from elsewhere in the video.
 
+Cover distinct moments. Several near-duplicates of the same moment with slightly different boundaries crowd out the rest of the video: if two candidates would leave a viewer with essentially the same thing, return only the stronger one, and spend the remaining slots elsewhere in the transcript.
+
 Rules you must follow exactly:
 - Every moment must lie inside the transcript's time range.
 - hook_quote must be copied CHARACTER FOR CHARACTER from the transcript. Do not paraphrase, summarise, correct grammar, or fix punctuation. A quote that does not appear verbatim in the transcript causes the whole moment to be discarded.
@@ -68,7 +70,12 @@ export function createNvidiaDiscovery(client: OpenAiClient, model: string): Clip
         String(request.targetDurationSec.max),
       );
 
-      const raw = await client.postJson<unknown>('/chat/completions', {
+      // Streamed, not because anything downstream consumes tokens as they
+      // arrive — the deltas are reassembled into one completion before this
+      // line returns — but because a long non-streaming generation is cut off
+      // by NVIDIA's gateway deadline with an HTTP 504 while the model is still
+      // writing. Streaming keeps bytes flowing, so the deadline is never hit.
+      const raw = await client.postJsonStream<unknown>('/chat/completions', {
         model,
         // Deterministic-leaning: discovery should not shuffle between runs.
         temperature: 0.2,

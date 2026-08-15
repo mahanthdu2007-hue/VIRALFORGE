@@ -7,6 +7,7 @@
  */
 
 import { aiError } from '@/lib/errors';
+import { assembleSseCompletion } from './stream';
 
 export const OPENAI_BASE_URL = 'https://api.openai.com/v1';
 
@@ -54,10 +55,57 @@ export class OpenAiClient {
     return this.send<T>(path, { method: 'POST', body: form });
   }
 
+  /**
+   * Chat completion over `stream: true`.
+   *
+   * Returns the same object shape the non-streaming endpoint returns — the SSE
+   * deltas are reassembled into one `choices[0].message.content` — so callers
+   * parse the result exactly as before. Used by NVIDIA discovery, whose gateway
+   * times a long non-streaming generation out at its own deadline.
+   *
+   * A server that ignores `stream` and answers with a plain JSON body is
+   * handled too: that body is returned unchanged.
+   */
+  async postJsonStream<T>(path: string, body: Record<string, unknown>): Promise<T> {
+    const { response, release } = await this.open(path, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', accept: 'text/event-stream' },
+      body: JSON.stringify({ ...body, stream: true }),
+    });
+
+    try {
+      if (!isEventStream(response)) return (await this.readJson<T>(response, path)) as T;
+      return (await assembleSseCompletion(response.body, path)) as T;
+    } catch (error) {
+      throw this.streamFailure(error, path);
+    } finally {
+      release();
+    }
+  }
+
   private async send<T>(path: string, init: RequestInit): Promise<T> {
+    const { response, release } = await this.open(path, init);
+    try {
+      return await this.readJson<T>(response, path);
+    } finally {
+      release();
+    }
+  }
+
+  /**
+   * Perform the request and hand back an OK response.
+   *
+   * The abort timer stays armed until `release()` is called, so it covers
+   * reading the body as well as receiving the headers — a stalled stream is
+   * still subject to the same `timeoutMs`, never a longer one.
+   *
+   * @throws AppError kind=ai on transport failure, timeout or a non-2xx status
+   */
+  private async open(path: string, init: RequestInit): Promise<{ response: Response; release: () => void }> {
     const url = `${this.baseUrl}${path}`;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+    const release = () => clearTimeout(timer);
 
     let response: Response;
     try {
@@ -67,17 +115,12 @@ export class OpenAiClient {
         headers: { authorization: `Bearer ${this.options.apiKey}`, ...(init.headers ?? {}) },
       });
     } catch (error) {
-      const aborted = error instanceof Error && error.name === 'AbortError';
-      throw aiError(
-        aborted ? 'provider_timeout' : 'provider_unreachable',
-        aborted ? 'The AI provider did not respond in time.' : 'Could not reach the AI provider.',
-        { cause: error, details: { path } },
-      );
-    } finally {
-      clearTimeout(timer);
+      release();
+      throw transportError(error, path);
     }
 
     if (!response.ok) {
+      release();
       const detail = await readErrorMessage(response);
       throw aiError('provider_request_failed', `${this.providerLabel} request failed: ${detail}`, {
         details: { path, status: response.status },
@@ -85,6 +128,10 @@ export class OpenAiClient {
       });
     }
 
+    return { response, release };
+  }
+
+  private async readJson<T>(response: Response, path: string): Promise<T> {
     try {
       return (await response.json()) as T;
     } catch (error) {
@@ -94,6 +141,31 @@ export class OpenAiClient {
       });
     }
   }
+
+  /** Errors raised while draining the stream, mapped like request errors. */
+  private streamFailure(error: unknown, path: string): unknown {
+    if (isAppError(error)) return error;
+    return transportError(error, path);
+  }
+}
+
+/** An `AppError` from any copy of the module — see the brand in `lib/errors`. */
+function isAppError(error: unknown): boolean {
+  return typeof error === 'object' && error !== null && Symbol.for('viralforge.AppError') in error;
+}
+
+function transportError(error: unknown, path: string): unknown {
+  const aborted = error instanceof Error && error.name === 'AbortError';
+  return aiError(
+    aborted ? 'provider_timeout' : 'provider_unreachable',
+    aborted ? 'The AI provider did not respond in time.' : 'Could not reach the AI provider.',
+    { cause: error, details: { path } },
+  );
+}
+
+/** Only a `text/event-stream` body is parsed as SSE; anything else is JSON. */
+function isEventStream(response: Response): boolean {
+  return (response.headers.get('content-type') ?? '').toLowerCase().includes('text/event-stream');
 }
 
 /** Best-effort extraction of the provider's error message; never throws. */

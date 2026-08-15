@@ -169,6 +169,14 @@ describe('NVIDIA discovery adapter', () => {
     expect(body.messages[0].content).toContain('"moments"');
   });
 
+  it('asks the model to cover distinct moments rather than near-duplicates', async () => {
+    const fetchImpl = vi.fn<FetchLike>(async () => completion({ moments: [] }));
+    await requireDiscovery(provider(fetchImpl)).discoverClips(discoveryRequest);
+
+    const body = JSON.parse(fetchImpl.mock.calls[0]![1].body as string);
+    expect(body.messages[0].content).toContain('Cover distinct moments.');
+  });
+
   it('rejects a response body that is not JSON at all', async () => {
     const notJson = jsonResponse({
       choices: [{ message: { content: 'Sure! Here are the moments: not actually JSON' }, finish_reason: 'stop' }],
