@@ -2,6 +2,7 @@
 
 export * from './boundaries';
 export * from './construction';
+export * from './expansion';
 export * from './preselection';
 export * from './ranking';
 export * from './scoring';

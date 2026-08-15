@@ -39,6 +39,7 @@ import { validateCandidates } from '@/validation/candidates';
 import { validateClipPlans } from '@/validation/clip-plans';
 import {
   ClipConstruction,
+  expandCandidateDrafts,
   preselectCandidates,
   scoreClip,
   selectTopClips,
@@ -157,7 +158,25 @@ export async function runAnalysis(deps: AnalysisDeps, job: AnalysisJob): Promise
       ...(transcript.language ? { languageHint: transcript.language } : {}),
     });
 
-    const { accepted, rejected } = validateCandidates(drafts, transcript, metadata.durationSec);
+    // Discovery reports the moment, not the Short: a strong beat routinely comes
+    // back as the 12–16s in which the point is made. Each one is widened around
+    // its own centre using transcript timings before it is judged, so the
+    // duration rule stays where it is and still rejects what it should.
+    const expansions = expandCandidateDrafts(drafts, transcript, metadata.durationSec);
+    for (const { range } of expansions) {
+      if (!range.expanded) continue;
+      log.debug('candidate expanded around discovered moment', {
+        moment: range.moment,
+        expanded: { startSec: range.startSec, endSec: range.endSec },
+        notes: range.notes,
+      });
+    }
+
+    const { accepted, rejected } = validateCandidates(
+      expansions.map((e) => e.draft),
+      transcript,
+      metadata.durationSec,
+    );
     for (const rejection of rejected) {
       // Rejections are the audit trail for the verbatim guarantee, so each one
       // is logged individually rather than counted.
