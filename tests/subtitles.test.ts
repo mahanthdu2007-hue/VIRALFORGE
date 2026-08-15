@@ -199,6 +199,64 @@ describe('word collection', () => {
 
     expect(collectClipWords([], timeline).notes).toContain('no_speech_in_clip');
   });
+
+  /**
+   * The regression that shipped three Shorts with no captions at all: NVIDIA
+   * Parakeet returned timings for only the words it could align — 2,139 of
+   * 5,662 on a real source — and the word path took that subset as gospel,
+   * building cues that omitted whatever the aligner had skipped.
+   */
+  it('falls back to apportioning when word timings do not spell the segment text', () => {
+    const timeline = buildClipTimeline([cut(0, 20, 0)]);
+    const segment = timedSegment(0, [
+      ['She', 0, 0.4],
+      ['looks', 0.4, 0.9],
+      // "like" is missing, exactly as the provider omitted it.
+      ["she's", 0.9, 1.2],
+      ['struggling.', 1.2, 2],
+    ], { text: "She looks like she's struggling." });
+
+    const collected = collectClipWords([segment], timeline);
+
+    expect(collected.words.map((w) => w.text).join(' ')).toBe("She looks like she's struggling.");
+    expect(collected.words.every((w) => w.timingSource === 'segment')).toBe(true);
+    expect(collected.notes).toContain('word_timings_incomplete');
+  });
+
+  it('still trusts complete word timings, punctuation and spacing aside', () => {
+    const timeline = buildClipTimeline([cut(0, 20, 0)]);
+    const segment = timedSegment(0, [
+      ['We', 0, 0.4],
+      ['tried', 0.4, 0.9],
+      ['it.', 0.9, 1.4],
+    ], { text: 'We tried it!' });
+
+    const collected = collectClipWords([segment], timeline);
+
+    expect(collected.words.every((w) => w.timingSource === 'word')).toBe(true);
+    expect(collected.notes).not.toContain('word_timings_incomplete');
+  });
+
+  it('produces cues that survive the verbatim guard when timings are partial', () => {
+    const text = "She looks like she's struggling. Like, mentally?";
+    const timeline = buildClipTimeline([cut(0, 20, 0)]);
+    const segment = timedSegment(0, [
+      ['She', 0, 0.4],
+      ['looks', 0.4, 0.9],
+      ["she's", 0.9, 1.2],
+      ['struggling.', 1.2, 2],
+      ['mentally?', 2.4, 3],
+    ], { text, startSec: 0, endSec: 3 });
+
+    const plan = buildSubtitlePlan({ cuts: [cut(0, 20, 0)], segments: [segment] });
+    expect(plan.ok).toBe(true);
+    if (!plan.ok) return;
+
+    expect(plan.plan.segments.length).toBeGreaterThan(0);
+    // The whole point: these cues are burnable, where the partial ones were not.
+    expect(verifySubtitleFidelity(plan.plan.segments, text)).toEqual([]);
+    void timeline;
+  });
 });
 
 /* -------------------------------------------------------------------------- */

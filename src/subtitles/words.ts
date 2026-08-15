@@ -4,21 +4,32 @@
  * The subtitle engine never reads `TranscriptSegment.text` and word timings as
  * two independent sources of truth. Exactly one of them is used per segment:
  *
- *  - **Word timings present.** Each word is taken as the provider reported it,
- *    text and interval together, and mapped onto the clip. Nothing is
- *    interpolated.
- *  - **Word timings absent.** The segment's own text is split on whitespace and
- *    the segment's own span is apportioned across those tokens in proportion to
- *    their length. This estimates *timing* — never text — and every word it
- *    produces is marked `timingSource: 'segment'` so the estimate is visible
- *    downstream rather than indistinguishable from a measurement.
+ *  - **Word timings present *and complete*.** Each word is taken as the provider
+ *    reported it, text and interval together, and mapped onto the clip. Nothing
+ *    is interpolated.
+ *  - **Word timings absent, or incomplete.** The segment's own text is split on
+ *    whitespace and the segment's own span is apportioned across those tokens in
+ *    proportion to their length. This estimates *timing* — never text — and
+ *    every word it produces is marked `timingSource: 'segment'` so the estimate
+ *    is visible downstream rather than indistinguishable from a measurement.
  *
  * Splitting on whitespace is what keeps the second path honest: the tokens are
  * substrings of the transcript, so joining them with single spaces reproduces
  * the segment's speech exactly, punctuation included.
+ *
+ * "Complete" is load-bearing and was learned the hard way. A provider may return
+ * a word list that is a *subset* of what it transcribed: NVIDIA Parakeet timed
+ * 2,139 of 5,662 words on a real 32-minute source, silently omitting the words
+ * it could not align — mostly short function words. Taking that list at face
+ * value builds cues that read "She looks she's struggling" where the speaker
+ * said "She looks like she's struggling", which `verifySubtitleFidelity` then
+ * correctly refuses to burn, and the clip ships with **no captions at all**.
+ * A partial word list is therefore treated as no word list: better an
+ * apportioned timing for the speaker's real sentence than an exact timing for a
+ * sentence they did not say.
  */
 
-import type { SubtitleSourceWord, TranscriptSegment, TranscriptWord } from '@/domain';
+import { normaliseForComparison, type SubtitleSourceWord, type TranscriptSegment, type TranscriptWord } from '@/domain';
 import { mapRangeToClip, type ClipTimeline } from './timeline';
 
 export interface CollectedWords {
@@ -52,7 +63,13 @@ export function collectClipWords(
     const timed = segment.words ?? [];
     const usable = timed.filter(isUsableWord);
 
-    if (usable.length > 0) {
+    // A word list that does not spell the segment's own text is not a timing for
+    // that text, whatever its length. Checked against the same normalisation the
+    // verbatim guard uses, so "usable here" means exactly "burnable there".
+    const complete = usable.length > 0 && wordsSpellSegmentText(usable, segment.text);
+    if (usable.length > 0 && !complete) notes.add('word_timings_incomplete');
+
+    if (complete) {
       sawWordTimings = true;
       if (usable.length !== timed.length) notes.add('words_with_unusable_timing_dropped');
 
@@ -129,6 +146,20 @@ export function apportionSegment(
     cursor = endSec;
     return { text, startSec, endSec };
   });
+}
+
+/**
+ * Do these words, joined in order, say what the segment says?
+ *
+ * Compared through `normaliseForComparison` — the verbatim guard's own key — so
+ * a provider's spacing or punctuation around a word cannot fail an otherwise
+ * complete list, while a *missing* word always does.
+ */
+export function wordsSpellSegmentText(
+  words: readonly TranscriptWord[],
+  text: string,
+): boolean {
+  return normaliseForComparison(words.map((word) => word.text).join(' ')) === normaliseForComparison(text);
 }
 
 const isUsableWord = (word: TranscriptWord): boolean =>
