@@ -34,4 +34,11 @@ export {
 
 export { buildClipTimeline, mapRangeToClip, rangeSurvivesCuts, type ClipTimeline } from './timeline';
 
-export { collectClipWords, apportionSegment, type CollectedWords } from './words';
+export {
+  collectClipWords,
+  apportionSegment,
+  alignSegmentWords,
+  wordsSpellSegmentText,
+  type CollectedWords,
+  type AlignedWord,
+} from './words';

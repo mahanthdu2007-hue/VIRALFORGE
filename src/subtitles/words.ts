@@ -86,18 +86,24 @@ export function collectClipWords(
       continue;
     }
 
-    const apportioned = apportionSegment(segment);
-    if (apportioned.length === 0) continue;
+    // Partial timings are still evidence: the words the provider *did* time keep
+    // their measured interval and only the gaps between them are estimated.
+    const aligned = usable.length > 0 ? alignSegmentWords(segment, usable) : apportionSegment(segment);
+    if (aligned.length === 0) continue;
 
-    sawSegmentFallback = true;
-    for (const word of apportioned) {
+    for (const word of aligned) {
       const mapped = mapRangeToClip(timeline, word);
       if (!mapped) continue;
+
+      const measured = 'measured' in word && word.measured === true;
+      if (measured) sawWordTimings = true;
+      else sawSegmentFallback = true;
+
       words.push({
         ...mapped,
         text: word.text,
         sourceSegmentId: segment.id,
-        timingSource: 'segment',
+        timingSource: measured ? 'word' : 'segment',
       });
     }
   }
@@ -147,6 +153,117 @@ export function apportionSegment(
     return { text, startSec, endSec };
   });
 }
+
+/** A token with a span, and whether that span was measured or estimated. */
+export interface AlignedWord {
+  readonly text: string;
+  readonly startSec: number;
+  readonly endSec: number;
+  /** True when the provider timed this exact word; false when interpolated. */
+  readonly measured: boolean;
+}
+
+/**
+ * The segment's own text, timed by whatever the provider managed to align.
+ *
+ * The middle ground between trusting a partial word list (which loses the words
+ * it omits) and ignoring it (which throws away real measurements): every token
+ * of the segment's text is kept, in order; tokens the provider timed keep that
+ * exact interval; runs it skipped are spread across the gap their neighbours
+ * leave, weighted by length the same way `apportionSegment` does.
+ *
+ * Why it matters: NVIDIA Parakeet times roughly a third of its own words, and
+ * its segments run ~15s. Apportioning the whole span linearly ignores every
+ * pause in it and drifts captions off the speech; anchoring to the words that
+ * *were* measured pins the estimate back to reality several times a sentence.
+ *
+ * Matching is on alphanumerics alone, so a provider's punctuation or spacing
+ * around a word cannot break the alignment — a token that still fails to match
+ * is simply treated as one of the gaps.
+ */
+export function alignSegmentWords(
+  segment: Pick<TranscriptSegment, 'text' | 'startSec' | 'endSec'>,
+  timed: readonly TranscriptWord[],
+): readonly AlignedWord[] {
+  const tokens = segment.text.trim().split(/\s+/u).filter((token) => token.length > 0);
+  if (tokens.length === 0) return [];
+
+  // Walk both sequences forward together. Order is the only alignment signal
+  // that is safe here: matching by text alone would let a repeated word ("like")
+  // bind to the wrong occurrence and drag the timeline backwards.
+  const anchors = new Map<number, TranscriptWord>();
+  let next = 0;
+
+  for (const word of timed) {
+    const key = alignmentKey(word.text);
+    if (key.length === 0) continue;
+
+    for (let i = next; i < tokens.length; i += 1) {
+      if (alignmentKey(tokens[i]!) !== key) continue;
+      anchors.set(i, word);
+      next = i + 1;
+      break;
+    }
+  }
+
+  if (anchors.size === 0) return apportionSegment(segment).map(toEstimated);
+
+  const aligned: AlignedWord[] = [];
+  let cursor = Math.min(segment.startSec, anchors.get([...anchors.keys()][0]!)!.startSec);
+
+  for (let i = 0; i < tokens.length; ) {
+    const anchor = anchors.get(i);
+    if (anchor) {
+      aligned.push({ text: tokens[i]!, startSec: anchor.startSec, endSec: anchor.endSec, measured: true });
+      cursor = anchor.endSec;
+      i += 1;
+      continue;
+    }
+
+    // A run of untimed tokens, bounded by the previous anchor's end and the next
+    // anchor's start — or by the segment's own edges at either extreme.
+    let end = i;
+    while (end < tokens.length && !anchors.has(end)) end += 1;
+
+    const until = end < tokens.length ? anchors.get(end)!.startSec : Math.max(segment.endSec, cursor);
+    const run = tokens.slice(i, end);
+    for (const word of spread(run, cursor, until)) aligned.push(word);
+
+    cursor = until;
+    i = end;
+  }
+
+  return aligned;
+}
+
+/** Distribute tokens across `[from, to)`, weighted by length like apportioning. */
+function spread(tokens: readonly string[], from: number, to: number): AlignedWord[] {
+  const span = to - from;
+  // A gap with no room (anchors back to back) still has to produce forward
+  // ranges, so the words share a hairline rather than collapsing onto a point.
+  const usable = Number.isFinite(span) && span > 0 ? span : tokens.length * MIN_ESTIMATED_SPAN_SEC;
+  const weights = tokens.map((token) => token.length + 1);
+  const total = weights.reduce((sum, weight) => sum + weight, 0);
+
+  let cursor = from;
+  return tokens.map((text, index) => {
+    const startSec = cursor;
+    const endSec = index === tokens.length - 1 ? from + usable : startSec + (usable * weights[index]!) / total;
+    cursor = endSec;
+    return { text, startSec, endSec, measured: false };
+  });
+}
+
+/** Smallest span an estimated word may occupy when anchors leave no room. */
+const MIN_ESTIMATED_SPAN_SEC = 0.02;
+
+const toEstimated = (word: { text: string; startSec: number; endSec: number }): AlignedWord => ({
+  ...word,
+  measured: false,
+});
+
+/** Alphanumerics only: punctuation and case never decide an alignment. */
+const alignmentKey = (text: string): string => text.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
 
 /**
  * Do these words, joined in order, say what the segment says?

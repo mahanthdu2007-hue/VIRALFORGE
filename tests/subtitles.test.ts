@@ -206,21 +206,64 @@ describe('word collection', () => {
    * 5,662 on a real source — and the word path took that subset as gospel,
    * building cues that omitted whatever the aligner had skipped.
    */
-  it('falls back to apportioning when word timings do not spell the segment text', () => {
+  it('restores the words a partial timing omitted, keeping the measured ones exact', () => {
     const timeline = buildClipTimeline([cut(0, 20, 0)]);
     const segment = timedSegment(0, [
       ['She', 0, 0.4],
       ['looks', 0.4, 0.9],
       // "like" is missing, exactly as the provider omitted it.
-      ["she's", 0.9, 1.2],
-      ['struggling.', 1.2, 2],
-    ], { text: "She looks like she's struggling." });
+      ["she's", 1.5, 1.8],
+      ['struggling.', 1.8, 2.6],
+    ], { text: "She looks like she's struggling.", startSec: 0, endSec: 2.6 });
 
     const collected = collectClipWords([segment], timeline);
 
     expect(collected.words.map((w) => w.text).join(' ')).toBe("She looks like she's struggling.");
-    expect(collected.words.every((w) => w.timingSource === 'segment')).toBe(true);
     expect(collected.notes).toContain('word_timings_incomplete');
+
+    // The timed words keep their measured interval; only the gap is estimated.
+    const byText = new Map(collected.words.map((w) => [w.text, w]));
+    expect(byText.get('looks')).toMatchObject({ startSec: 0.4, endSec: 0.9, timingSource: 'word' });
+    expect(byText.get("she's")).toMatchObject({ startSec: 1.5, endSec: 1.8, timingSource: 'word' });
+    expect(byText.get('like')).toMatchObject({ timingSource: 'segment' });
+
+    // ...and it lands inside the gap its neighbours leave, not somewhere else.
+    const like = byText.get('like')!;
+    expect(like.startSec).toBeGreaterThanOrEqual(0.9);
+    expect(like.endSec).toBeLessThanOrEqual(1.5 + 1e-9);
+  });
+
+  it('keeps aligned words in order and never overlapping', () => {
+    const timeline = buildClipTimeline([cut(0, 30, 0)]);
+    const segment = timedSegment(0, [
+      ['One', 0, 0.3],
+      ['four', 2, 2.4],
+      ['seven', 5, 5.5],
+    ], { text: 'One two three four five six seven eight nine', startSec: 0, endSec: 7 });
+
+    const words = collectClipWords([segment], timeline).words;
+
+    expect(words.map((w) => w.text)).toEqual(
+      ['One', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'],
+    );
+    for (const [i, word] of words.entries()) {
+      expect(word.endSec).toBeGreaterThanOrEqual(word.startSec);
+      if (i > 0) expect(word.startSec).toBeGreaterThanOrEqual(words[i - 1]!.endSec - 1e-9);
+    }
+  });
+
+  it('apportions the whole segment when nothing at all could be aligned', () => {
+    const timeline = buildClipTimeline([cut(0, 20, 0)]);
+    const segment = timedSegment(0, [['zzz', 0, 0.4]], {
+      text: 'completely different words here',
+      startSec: 0,
+      endSec: 4,
+    });
+
+    const collected = collectClipWords([segment], timeline);
+
+    expect(collected.words.map((w) => w.text)).toEqual(['completely', 'different', 'words', 'here']);
+    expect(collected.words.every((w) => w.timingSource === 'segment')).toBe(true);
   });
 
   it('still trusts complete word timings, punctuation and spacing aside', () => {
