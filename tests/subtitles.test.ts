@@ -8,6 +8,7 @@ import {
   verifySubtitleFidelity,
   layoutClearsSubject,
   boxWithinFrame,
+  estimateTextUnits,
   type ClipCut,
   type SubtitleOptions,
   type SubtitleSegment,
@@ -379,8 +380,45 @@ describe('chunking', () => {
 
 describe('line layout', () => {
   it('fills greedily and keeps long words whole', () => {
-    expect(layoutLines(['aaa', 'bbb', 'ccc'], 7)).toEqual(['aaa bbb', 'ccc']);
+    expect(layoutLines(['aaa', 'bbb', 'ccc'], 8)).toEqual(['aaa bbb', 'ccc']);
     expect(layoutLines(['supercalifragilistic'], 5)).toEqual(['supercalifragilistic']);
+  });
+
+  it('breaks wide text earlier than narrow text at the same budget', () => {
+    // The bug this guards: a flat per-character budget let a full line of wide
+    // glyphs render wider than the whole 1080px frame, clipped at both edges,
+    // because libass is told not to wrap.
+    const wide = layoutLines('WHAT HAPPENED NEXT WAS'.split(' '), 21);
+    const narrow = layoutLines('it is if it is if it'.split(' '), 21);
+
+    expect(wide.length).toBeGreaterThan(1);
+    expect(narrow).toEqual(['it is if it is if it']);
+  });
+
+  it('keeps every line inside the caption box at the layout it advertises', () => {
+    const result = planSubtitleLayout();
+    if (!result.ok) throw new Error(`layout failed: ${result.reason}`);
+    const layout = result.layout;
+    const budgetPx = layout.box.width;
+
+    const lines = layoutLines('WHAT HAPPENED NEXT WAS ENTIRELY'.split(' '), layout.maxCharsPerLine);
+
+    for (const line of lines) {
+      expect(estimateTextUnits(line) * layout.fontSizePx).toBeLessThanOrEqual(budgetPx);
+    }
+  });
+});
+
+describe('text width estimation', () => {
+  it('ranks glyph classes the way the font does', () => {
+    expect(estimateTextUnits('lll')).toBeLessThan(estimateTextUnits('aaa'));
+    expect(estimateTextUnits('aaa')).toBeLessThan(estimateTextUnits('AAA'));
+    expect(estimateTextUnits('AAA')).toBeLessThan(estimateTextUnits('WWW'));
+  });
+
+  it('is additive and deterministic', () => {
+    expect(estimateTextUnits('ab')).toBeCloseTo(estimateTextUnits('a') + estimateTextUnits('b'), 10);
+    expect(estimateTextUnits('')).toBe(0);
   });
 });
 

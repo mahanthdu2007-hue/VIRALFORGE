@@ -6,7 +6,7 @@
  * was the point of splitting them in the first place. What it adds is the
  * plumbing between three things that each know nothing about the others:
  * frames come from a `FrameSource`, boxes from a `FrameDetector`, and the choice
- * of subject from `trackPrimarySubject`.
+ * of subject from `trackPrimarySubjectWindowed`.
  *
  * Two contracts are inherited from `SubjectTracker` and are the reason this
  * class is mostly error handling:
@@ -27,7 +27,7 @@
 
 import type { Dimensions } from '@/domain';
 import type { Logger } from '@/lib/logger';
-import { trackPrimarySubject, type AssociateOptions } from './detection/associate';
+import { trackPrimarySubjectWindowed, type WindowedTrackingOptions } from './detection/associate';
 import type { FrameSource } from './detection/frame-source';
 import type { DetectionFrame, FrameDetection, FrameDetector } from './detection/types';
 import type { SubjectTracker, TrackingRequest, TrackingResult } from './types';
@@ -41,8 +41,8 @@ export interface DetectorSubjectTrackerOptions {
   readonly maxFrames?: number;
   /** Longest edge of a decoded frame. Detection accuracy plateaus well below HD. */
   readonly maxEdgePx?: number;
-  /** Association tuning. `source` comes from the request. */
-  readonly association?: Omit<AssociateOptions, 'source'>;
+  /** Association and window-switching tuning. `source` comes from the request. */
+  readonly association?: Omit<WindowedTrackingOptions, 'source'>;
   readonly logger?: Pick<Logger, 'debug' | 'warn'>;
   /** Overrides the derived `detector:<id>` provenance string. */
   readonly id?: string;
@@ -75,7 +75,7 @@ export class DetectorSubjectTracker implements SubjectTracker {
 
     try {
       const detected = await this.detectFrames(request, fps, maxFrames);
-      const observations = trackPrimarySubject(detected, {
+      const observations = trackPrimarySubjectWindowed(detected, {
         source: request.source,
         ...(this.options.association ?? {}),
       });

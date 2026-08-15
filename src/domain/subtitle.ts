@@ -261,15 +261,71 @@ export const DEFAULT_FONT_SIZE_FRACTION = 0.045;
 export const DEFAULT_LINE_SPACING = 1.22;
 
 /**
- * Mean glyph advance as a fraction of the font size.
+ * Per-character advance widths, in fractions of the font size.
  *
- * A deliberate estimate, and the only place this file is not exact: measuring
- * real advances needs the font, which is a renderer concern. 0.5 is close for
- * a bold humanist sans on mixed-case English and errs towards *fewer*
- * characters per line, so the failure mode is a slightly early line break
- * rather than text running past the safe area.
+ * A flat mean is not good enough here, and the failure it caused is worth
+ * recording: at 0.5 the layout advertised 22 characters per line, and 22 wide
+ * characters ("WHAT HAPPENED NEXT WAS") measure 1237px at an 86px bold Arial —
+ * wider than the whole 1080px frame, not merely wider than the safe area. With
+ * `WrapStyle: 2` libass does not wrap, so the caption was clipped off *both*
+ * edges. Character width in a proportional font varies by more than 3× (`l` is
+ * 0.28, `M` is 0.90), so which characters a line holds decides whether it fits.
+ *
+ * The values approximate Arial Bold's own advances, grouped into classes rather
+ * than tabulated per glyph: measured against libass, the classes land within a
+ * few percent of the real set widths, which is well inside the margin a caption
+ * needs. Unlisted characters take `DEFAULT_CHAR_UNITS`.
  */
-const GLYPH_ADVANCE_RATIO = 0.5;
+const NARROWEST_CHARS = new Set(['i', 'j', 'l', 'I', '.', ',', "'", '"', '!', ':', ';', '|', '`', ' ']);
+const NARROW_CHARS = new Set(['f', 't', 'r', '(', ')', '[', ']', '/', '\\', '-']);
+const WIDE_LOWER_CHARS = new Set(['m', 'w']);
+const WIDE_UPPER_CHARS = new Set(['M', 'W']);
+
+const NARROWEST_UNITS = 0.28;
+const NARROW_UNITS = 0.36;
+const WIDE_LOWER_UNITS = 0.85;
+const WIDE_UPPER_UNITS = 0.9;
+const UPPER_UNITS = 0.7;
+const DEFAULT_CHAR_UNITS = 0.6;
+
+/**
+ * Mean advance across ordinary prose, used to express a pixel budget as the
+ * character count `SubtitleOptions.maxCharsPerLine` is stated in.
+ *
+ * It is only the *unit* of the budget; what actually decides a line break is
+ * `estimateTextUnits`, which measures the characters a line really holds.
+ */
+const GLYPH_ADVANCE_RATIO = 0.52;
+
+/**
+ * Width of `text` in font-size units — multiply by the font size for pixels.
+ *
+ * Deterministic and dependency-free: no font is loaded and no renderer is
+ * consulted, which is what keeps line breaking a pure function that a unit test
+ * can pin down exactly.
+ */
+export function estimateTextUnits(text: string): number {
+  let units = 0;
+
+  for (const char of text) {
+    if (NARROWEST_CHARS.has(char)) units += NARROWEST_UNITS;
+    else if (NARROW_CHARS.has(char)) units += NARROW_UNITS;
+    else if (WIDE_UPPER_CHARS.has(char)) units += WIDE_UPPER_UNITS;
+    else if (WIDE_LOWER_CHARS.has(char)) units += WIDE_LOWER_UNITS;
+    else if (char >= 'A' && char <= 'Z') units += UPPER_UNITS;
+    else units += DEFAULT_CHAR_UNITS;
+  }
+
+  return units;
+}
+
+/** The width budget a `maxCharsPerLine` figure stands for, in the same units. */
+export const lineBudgetUnits = (maxCharsPerLine: number): number =>
+  maxCharsPerLine * GLYPH_ADVANCE_RATIO;
+
+/** Whether `text` fits a line of `maxCharsPerLine` average-width characters. */
+export const fitsLineWidth = (text: string, maxCharsPerLine: number): boolean =>
+  estimateTextUnits(text) <= lineBudgetUnits(maxCharsPerLine);
 
 /** Never fewer than this per line, however narrow the frame. */
 const MIN_CHARS_PER_LINE = 8;

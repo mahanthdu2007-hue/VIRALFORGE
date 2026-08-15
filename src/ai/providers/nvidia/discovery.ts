@@ -22,6 +22,8 @@ Look for: strong opening statements, curiosity, emotional intensity, surprising 
 
 Avoid: greetings, introductions and sign-offs, filler, long pauses, repetition, incomplete thoughts, and anything that only makes sense with context from elsewhere in the video.
 
+Cover distinct moments. Several near-duplicates of the same moment with slightly different boundaries crowd out the rest of the video: if two candidates would leave a viewer with essentially the same thing, return only the stronger one, and spend the remaining slots elsewhere in the transcript.
+
 Rules you must follow exactly:
 - Every moment must lie inside the transcript's time range.
 - hook_quote must be copied CHARACTER FOR CHARACTER from the transcript. Do not paraphrase, summarise, correct grammar, or fix punctuation. A quote that does not appear verbatim in the transcript causes the whole moment to be discarded.

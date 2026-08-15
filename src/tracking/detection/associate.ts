@@ -194,6 +194,138 @@ export function associateTracks(
     .sort((a, b) => b.score - a.score || a.subjectId.localeCompare(b.subjectId));
 }
 
+export interface WindowedTrackingOptions extends AssociateOptions {
+  /** Length of each re-evaluation window, in seconds. */
+  readonly windowSec?: number;
+  /** How far a challenger must outscore the incumbent before a switch is considered. */
+  readonly switchMarginRatio?: number;
+  /** Consecutive windows a challenger must lead by that margin before it wins. */
+  readonly minSustainWindows?: number;
+}
+
+/**
+ * Window length, switch margin and sustain count.
+ *
+ * 3.5s is long enough to hold a sentence, so a switch lands between thoughts
+ * rather than inside one, and short enough that a reply is not missed entirely.
+ * The margin and the sustain count exist for the same reason and neither is
+ * sufficient alone: the margin ignores two people whose presence is within noise
+ * of each other, and the sustain count ignores the one frame where the person
+ * turning their head scores higher than the person talking.
+ */
+export const WINDOWED_DEFAULTS = {
+  windowSec: 3.5,
+  switchMarginRatio: 0.18,
+  minSustainWindows: 2,
+} as const;
+
+/**
+ * The primary subject over time, re-chosen per window rather than once.
+ *
+ * `trackPrimarySubject` answers "who is this clip about" with a single track,
+ * which is right for one speaker and wrong for two: the person who loses the
+ * cumulative presence score by a hair is never framed, including through the
+ * seconds they are the one talking. This splits the clip into fixed windows,
+ * picks a leader in each with the same rule, and then *resists* changing its
+ * mind — a challenger must both clear `switchMarginRatio` and hold the lead for
+ * `minSustainWindows` before the crop follows it.
+ *
+ * The exception to the hysteresis is absence: an incumbent with no observations
+ * at all in a window has left, and waiting for a sustained lead before following
+ * whoever is still on screen would frame an empty chair.
+ *
+ * Returns the concatenated observations of whoever was chosen in each window, in
+ * time order — `buildCropPath` already tolerates `subjectId` changing along a
+ * path and pans between them under its own velocity limit. Empty means the same
+ * as it does everywhere else in this module: centre-crop instead.
+ */
+export function trackPrimarySubjectWindowed(
+  frames: readonly DetectionFrame[],
+  options: WindowedTrackingOptions,
+): readonly SubjectObservation[] {
+  const tracks = associateTracks(frames, options);
+  if (tracks.length === 0) return [];
+
+  // One subject is the case the whole-clip rule already handles correctly, and
+  // routing it here would only risk a different answer for identical footage.
+  if (tracks.length === 1) return trackPrimarySubject(frames, options);
+
+  const settings = { ...ASSOCIATE_DEFAULTS, ...WINDOWED_DEFAULTS, ...definedOnly(options) };
+  const stamps = frames.map((frame) => frame.atSec).filter((atSec) => Number.isFinite(atSec));
+  if (stamps.length === 0) return [];
+
+  const startSec = Math.min(...stamps);
+  const endSec = Math.max(...stamps);
+  const windowSec = settings.windowSec > 0 ? settings.windowSec : WINDOWED_DEFAULTS.windowSec;
+  const windowCount = Math.max(1, Math.ceil((endSec - startSec) / windowSec));
+  const frameArea = options.source.width * options.source.height;
+
+  const windows = Array.from({ length: windowCount }, (_, index) => {
+    const from = startSec + index * windowSec;
+    // The last window is closed at the final stamp so no observation is dropped
+    // by floating-point drift in the window boundaries.
+    const to = index === windowCount - 1 ? endSec + 1 : from + windowSec;
+    const present = tracks
+      .map((track) => {
+        const observations = track.observations.filter((o) => o.atSec >= from && o.atSec < to);
+        return { subjectId: track.subjectId, observations, score: presenceScore(observations, frameArea) };
+      })
+      .filter((track) => track.observations.length > 0);
+
+    return { from, to, present, leader: selectPrimaryTrack(present)?.subjectId ?? null };
+  });
+
+  const scoreIn = (index: number, subjectId: string | null): number =>
+    subjectId === null
+      ? 0
+      : (windows[index]?.present.find((track) => track.subjectId === subjectId)?.score ?? 0);
+
+  /** Whether `challenger` clears the margin over `incumbent` in this window. */
+  const clearsMargin = (index: number, challenger: string, incumbent: string): boolean =>
+    scoreIn(index, challenger) >= scoreIn(index, incumbent) * (1 + settings.switchMarginRatio);
+
+  let current: string | null = null;
+
+  const assigned = windows.map((window, index) => {
+    if (current === null || window.leader === null) {
+      current = current ?? window.leader;
+      return current;
+    }
+
+    if (window.leader === current) return current;
+
+    // The incumbent is simply not here any more; there is nothing to be loyal to.
+    if (scoreIn(index, current) === 0) {
+      current = window.leader;
+      return current;
+    }
+
+    const sustained = Array.from({ length: settings.minSustainWindows }, (_, k) => index + k).every(
+      (at) =>
+        at < windowCount && windows[at]!.leader === window.leader && clearsMargin(at, window.leader!, current!),
+    );
+
+    if (sustained) current = window.leader;
+    return current;
+  });
+
+  const observations = windows
+    .flatMap((window, index) => {
+      const subjectId = assigned[index];
+      if (subjectId === null) return [];
+      return window.present.find((track) => track.subjectId === subjectId)?.observations ?? [];
+    })
+    .sort((a, b) => a.atSec - b.atSec);
+
+  // The same floors as the whole-clip path, applied to the union: a clip where
+  // two people between them are on screen throughout is followable even when
+  // neither alone would clear the bar.
+  if (observations.length < settings.minObservations) return [];
+  if (frames.length > 0 && observations.length / frames.length < settings.minCoverage) return [];
+
+  return observations;
+}
+
 /** The track worth following: most present, not merely most confident once. */
 export function selectPrimaryTrack(tracks: readonly SubjectTrack[]): SubjectTrack | null {
   return tracks.reduce<SubjectTrack | null>((best, track) => {

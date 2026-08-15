@@ -34,6 +34,7 @@ import {
   toFrameCoordinates,
   toSourceCoordinates,
   trackPrimarySubject,
+  trackPrimarySubjectWindowed,
   YUNET_INPUT_SIZE,
   YUNET_STRIDES,
   type DetectionFrame,
@@ -550,6 +551,98 @@ describe('trackPrimarySubject', () => {
     const tracks = associateTracks(frames, { source: SOURCE });
     expect(selectPrimaryTrack(tracks)!.observations).toHaveLength(10);
     expect(selectPrimaryTrack([])).toBeNull();
+  });
+});
+
+/* -------------------------------------------------------------------------- */
+/* Windowed selection                                                         */
+/* -------------------------------------------------------------------------- */
+
+describe('trackPrimarySubjectWindowed', () => {
+  const script = (perFrame: readonly (readonly FrameDetection[])[]): DetectionFrame[] =>
+    perFrame.map((detections, i) => ({ atSec: i * 0.5, detections }));
+
+  /** Two people, far enough apart that association never merges them. */
+  const left = (over: Partial<FrameDetection> = {}) =>
+    detection({ x: 200, y: 300, width: 200, height: 240, confidence: 0.9, ...over });
+  const right = (over: Partial<FrameDetection> = {}) =>
+    detection({ x: 1500, y: 300, width: 200, height: 240, confidence: 0.9, ...over });
+
+  it('agrees with the whole-clip rule when there is only one subject', () => {
+    const frames = script(
+      Array.from({ length: 10 }, (_, i) => [detection({ x: 500 + i * 20, y: 300, width: 160, height: 200 })]),
+    );
+
+    expect(trackPrimarySubjectWindowed(frames, { source: SOURCE })).toEqual(
+      trackPrimarySubject(frames, { source: SOURCE }),
+    );
+  });
+
+  it('switches to the other person when they take over the second half', () => {
+    // 24 frames = 12s. Left owns the first half alone, right the second half.
+    const frames = script(Array.from({ length: 24 }, (_, i) => (i < 12 ? [left()] : [right()])));
+
+    const observations = trackPrimarySubjectWindowed(frames, { source: SOURCE });
+    const ids = new Set(observations.map((o) => o.subjectId));
+
+    expect(ids.size).toBe(2);
+    expect(observations[0]!.x).toBe(200);
+    expect(observations[observations.length - 1]!.x).toBe(1500);
+  });
+
+  it('does not switch for a briefly louder challenger', () => {
+    // Both present throughout; the right-hand person is momentarily bigger for a
+    // single window, which is exactly what the sustain count exists to ignore.
+    const frames = script(
+      Array.from({ length: 24 }, (_, i) =>
+        i === 10 || i === 11 ? [left(), right({ width: 400, height: 460 })] : [left(), right()],
+      ),
+    );
+
+    const observations = trackPrimarySubjectWindowed(frames, { source: SOURCE });
+    expect(new Set(observations.map((o) => o.subjectId)).size).toBe(1);
+  });
+
+  it('does not flap between two people of near-equal presence', () => {
+    const frames = script(Array.from({ length: 24 }, () => [left(), right({ confidence: 0.88 })]));
+
+    const observations = trackPrimarySubjectWindowed(frames, { source: SOURCE });
+    expect(new Set(observations.map((o) => o.subjectId)).size).toBe(1);
+  });
+
+  it('follows whoever is left when the incumbent walks out', () => {
+    // Left alone, then gone entirely; right arrives and stays. The incumbent has
+    // no presence at all, so loyalty would frame an empty chair.
+    const frames = script(Array.from({ length: 20 }, (_, i) => (i < 8 ? [left()] : [right()])));
+
+    const observations = trackPrimarySubjectWindowed(frames, { source: SOURCE });
+    expect(observations[observations.length - 1]!.x).toBe(1500);
+  });
+
+  it('still gives up when nobody is on screen long enough to follow', () => {
+    const frames = script(Array.from({ length: 20 }, (_, i) => (i < 2 ? [left()] : i === 3 ? [right()] : [])));
+
+    expect(trackPrimarySubjectWindowed(frames, { source: SOURCE })).toEqual([]);
+  });
+
+  it('returns observations in time order across a switch', () => {
+    const frames = script(Array.from({ length: 24 }, (_, i) => (i < 12 ? [left()] : [right()])));
+
+    const times = trackPrimarySubjectWindowed(frames, { source: SOURCE }).map((o) => o.atSec);
+    expect(times).toEqual([...times].sort((a, b) => a - b));
+  });
+
+  it('is deterministic', () => {
+    const frames = script(Array.from({ length: 24 }, (_, i) => (i < 12 ? [left()] : [right()])));
+
+    expect(trackPrimarySubjectWindowed(frames, { source: SOURCE })).toEqual(
+      trackPrimarySubjectWindowed(frames, { source: SOURCE }),
+    );
+  });
+
+  it('returns nothing when there is nothing to track', () => {
+    expect(trackPrimarySubjectWindowed([], { source: SOURCE })).toEqual([]);
+    expect(trackPrimarySubjectWindowed(script([[], [], []]), { source: SOURCE })).toEqual([]);
   });
 });
 
