@@ -112,8 +112,8 @@ export async function createSubjectTracker(
     );
   }
 
-  if (!isInstalled('onnxruntime-node')) {
-    return degraded(requested, 'Face tracking needs the optional "onnxruntime-node" package, which is not installed.');
+  if (!(await isRuntimeLoadable())) {
+    return degraded(requested, 'Face tracking needs the optional "onnxruntime-node" package, which could not be loaded.');
   }
 
   const detector = new YuNetFaceDetector({
@@ -177,21 +177,44 @@ const isReadableFile = async (target: string): Promise<boolean> => {
 };
 
 /**
- * Is a package installed, without loading it?
+ * Can the optional ONNX runtime actually be loaded here?
  *
- * `require.resolve` reads the package's manifest and stops. Importing
- * `onnxruntime-node` to find out would load a few hundred megabytes of native
- * runtime purely to answer a yes/no question, on a path taken during startup.
+ * By loading it, which is the only answer that is true in every environment
+ * this runs in. Two cheaper checks were tried first and both lied:
  *
- * Resolution is attempted from two places, and the second is not belt and
- * braces — it is the one that works in production. Under Next.js this module
- * runs from inside a webpack bundle, so `import.meta.url` points at
- * `.next/server/...`, and an optional dependency deliberately left unbundled
- * cannot be resolved from there. The check then reported "not installed" for a
- * package sitting in `node_modules`, and face tracking silently became a centre
- * crop in the built app while working perfectly under `node` and `vitest` —
- * which is exactly the kind of environment-dependent falsehood this function
- * must not tell. The project root resolves it in both worlds.
+ *  - `createRequire(import.meta.url).resolve(...)` resolves against the webpack
+ *    bundle under Next.js (`.next/server/...`), where an intentionally
+ *    unbundled optional dependency is not resolvable.
+ *  - Adding the project root as a second resolution base did not help either,
+ *    because webpack rewrites `createRequire(...).resolve(...)` when the
+ *    specifier is a variable — the "Critical dependency: the request of a
+ *    dependency is an expression" build warning is that rewrite happening.
+ *
+ * Both reported "not installed" for a package sitting in `node_modules`, so
+ * face tracking silently became a centre crop in the built app while passing
+ * under `node` and `vitest`. `webpackIgnore` is what keeps the import away from
+ * the bundler, exactly as `yunet.ts` does for the same module.
+ *
+ * The cost is loading the runtime — but this runs only when face tracking was
+ * asked for, where it is about to be loaded regardless, and the module cache
+ * makes the detector's own import free afterwards.
+ */
+async function isRuntimeLoadable(): Promise<boolean> {
+  try {
+    const specifier = 'onnxruntime-node';
+    await import(/* webpackIgnore: true */ specifier);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Is a package resolvable from the project root?
+ *
+ * Kept for callers that want a cheap, synchronous answer about a *bundled*
+ * dependency. Do not use it to gate an optional native module inside a
+ * bundle — see `isRuntimeLoadable` for why that does not work.
  */
 export function isInstalled(specifier: string): boolean {
   const roots = [import.meta.url, pathToFileURL(path.join(process.cwd(), 'package.json')).href];
