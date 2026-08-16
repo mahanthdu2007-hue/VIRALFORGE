@@ -149,11 +149,25 @@ export async function renderClipPlan(
         ...(log ? { logger: log } : {}),
       });
 
-  log?.debug('subject tracker selected', {
-    requested: selection.requested,
-    mode: selection.mode,
-    trackerId: selection.tracker.id,
-  });
+  // A tracker that quietly degraded is the difference between a Short framed on
+  // the speaker and one centre-cropped through their ear, and it is invisible in
+  // the output — the clip renders perfectly, just badly framed. So the fallback
+  // is a warning carrying its reason, not a debug line the operator has to know
+  // to go looking for.
+  if (selection.mode === selection.requested) {
+    log?.debug('subject tracker selected', {
+      requested: selection.requested,
+      mode: selection.mode,
+      trackerId: selection.tracker.id,
+    });
+  } else {
+    log?.warn('subject tracker degraded; framing will not follow the subject', {
+      requested: selection.requested,
+      mode: selection.mode,
+      trackerId: selection.tracker.id,
+      reason: 'reason' in selection ? selection.reason : undefined,
+    });
+  }
 
   const cropPlan = await trackedCropPlan(selection.tracker, {
     videoPath: request.sourcePath,

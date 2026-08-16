@@ -50,6 +50,7 @@ import { buildCandidates } from '@/storage/candidate-repository';
 import { buildClipPlans } from '@/storage/clip-plan-repository';
 import { failJob, setJobProgress, transitionJob } from '@/jobs/transitions';
 import { renderSelectedClips } from './render-stage';
+import { discoverAcrossWindows } from './windowed-discovery';
 import type { AnalysisDeps } from './deps';
 
 /**
@@ -150,13 +151,21 @@ export async function runAnalysis(deps: AnalysisDeps, job: AnalysisJob): Promise
     /* -- Discover --------------------------------------------------------- */
     current = await save(deps, transitionJob(current, 'FINDING_CLIPS'));
 
-    const drafts = await discovery.discoverClips({
-      segments: transcript.segments.map((s) => ({ startSec: s.startSec, endSec: s.endSec, text: s.text })),
-      videoDurationSec: metadata.durationSec,
-      maxCandidates: deps.maxCandidates,
-      targetDurationSec: { min: CANDIDATE_MIN_DURATION_SEC, max: CANDIDATE_MAX_DURATION_SEC },
-      ...(transcript.language ? { languageHint: transcript.language } : {}),
-    });
+    // Windowed for a long source, one request for a short one. A single request
+    // covering forty minutes returns candidates clustered wherever the model's
+    // attention settled, leaving ranking roughly one candidate per three minutes
+    // to choose three Shorts from; windows give each stretch its own budget.
+    const drafts = await discoverAcrossWindows(
+      discovery,
+      {
+        segments: transcript.segments.map((s) => ({ startSec: s.startSec, endSec: s.endSec, text: s.text })),
+        videoDurationSec: metadata.durationSec,
+        maxCandidates: deps.maxCandidates,
+        targetDurationSec: { min: CANDIDATE_MIN_DURATION_SEC, max: CANDIDATE_MAX_DURATION_SEC },
+        ...(transcript.language ? { languageHint: transcript.language } : {}),
+      },
+      { logger: log },
+    );
 
     // Discovery reports the moment, not the Short: a strong beat routinely comes
     // back as the 12–16s in which the point is made. Each one is widened around
