@@ -28,6 +28,7 @@ import {
   mapRangeToClip,
   renderAssDocument,
   subtitlesFilter,
+  DEFAULT_SUBTITLE_STYLE,
 } from '@/subtitles';
 
 /* -------------------------------------------------------------------------- */
@@ -820,10 +821,15 @@ describe('ASS rendering', () => {
     expect(fields[21]).toBe(String(plan.layout.marginVerticalPx));
   });
 
-  it('writes one dialogue row per cue, timed on the clip', () => {
-    const rows = renderAssDocument(planFor())
-      .split('\n')
-      .filter((line) => line.startsWith('Dialogue:'));
+  /** A dialogue row's text, with any inline colour overrides removed. */
+  const plainText = (row: string): string =>
+    row.slice(row.lastIndexOf(',,') + 2).replace(/\{\\c&H[0-9A-F]{6}&\}/gu, '');
+
+  const dialogue = (document: string): string[] =>
+    document.split('\n').filter((line) => line.startsWith('Dialogue:'));
+
+  it('writes one static dialogue row per cue when highlighting is off', () => {
+    const rows = dialogue(renderAssDocument(planFor(), { ...DEFAULT_SUBTITLE_STYLE, karaoke: false }));
 
     expect(rows).toHaveLength(1);
     expect(rows[0]).toBe('Dialogue: 0,0:00:00.00,0:00:01.40,Caption,,0,0,0,,We tried it anyway.');
@@ -831,13 +837,61 @@ describe('ASS rendering', () => {
 
   it('hard-breaks multi-line cues with \\N', () => {
     const plan = planFor({ maxCharsPerLine: 10 });
-    const row = renderAssDocument(plan)
-      .split('\n')
-      .find((line) => line.startsWith('Dialogue:'))!;
+    const row = dialogue(renderAssDocument(plan))[0]!;
 
     expect(plan.segments[0]!.lines.length).toBeGreaterThan(1);
     expect(row).toContain('\\N');
-    expect(row.slice(row.lastIndexOf(',,') + 2).split('\\N').join(' ')).toBe('We tried it anyway.');
+    expect(plainText(row).split('\\N').join(' ')).toBe('We tried it anyway.');
+  });
+
+  describe('word highlighting', () => {
+    it('writes one row per word, each showing the whole cue', () => {
+      const rows = dialogue(renderAssDocument(planFor()));
+
+      expect(rows).toHaveLength(4);
+      for (const row of rows) expect(plainText(row)).toBe('We tried it anyway.');
+    });
+
+    it('tints exactly one word per row, in order', () => {
+      const rows = dialogue(renderAssDocument(planFor()));
+      const highlighted = rows.map((row) => /\{\\c&H00D7FF&\}(\S+?)\{\\c&HFFFFFF&\}/u.exec(row)?.[1]);
+
+      expect(highlighted).toEqual(['We', 'tried', 'it', 'anyway.']);
+      for (const row of rows) {
+        expect(row.match(/\{\\c&H00D7FF&\}/gu)).toHaveLength(1);
+      }
+    });
+
+    it('tiles the cue with no gap between words', () => {
+      const rows = dialogue(renderAssDocument(planFor()));
+      const times = rows.map((row) => row.split(',').slice(1, 3));
+
+      // First row opens the cue, last row closes it, and each starts where the
+      // previous ended — a caption that blinks between words reads as broken.
+      expect(times[0]![0]).toBe('0:00:00.00');
+      expect(times[times.length - 1]![1]).toBe('0:00:01.40');
+      for (const [i, [start]] of times.entries()) {
+        if (i > 0) expect(start).toBe(times[i - 1]![1]);
+      }
+    });
+
+    it('keeps the speaker\'s words verbatim across every row', () => {
+      const rows = dialogue(renderAssDocument(planFor({ maxCharsPerLine: 10 })));
+
+      for (const row of rows) {
+        expect(plainText(row).split('\\N').join(' ')).toBe('We tried it anyway.');
+      }
+    });
+
+    it('falls back to a static row for a cue with no word timings', () => {
+      const plan = planFor();
+      const stripped = {
+        ...plan,
+        segments: plan.segments.map((cue) => ({ ...cue, words: null })),
+      };
+
+      expect(dialogue(renderAssDocument(stripped))).toHaveLength(1);
+    });
   });
 
   it('escapes ASS syntax instead of dropping it', () => {
