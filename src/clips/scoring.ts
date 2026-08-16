@@ -216,6 +216,9 @@ function measurePenalties(input: ScoringInput, features: TextFeatures): Record<C
           (features.opensOnBoilerplate ? BOILERPLATE_OPENING_COST : 0),
       ),
     ),
+    // Taken straight from the text measurement: an ad is not more forgivable in
+    // a long clip than a short one, so there is nothing here to normalise.
+    promotional: round3(clamp01(features.promotionalStrength)),
   };
 }
 
@@ -417,6 +420,7 @@ const PENALTY_LABELS: Record<ClipScorePenalty, string> = {
   repetition: 'repetition',
   contextDependency: 'context dependency',
   boilerplate: 'channel boilerplate',
+  promotional: 'advertising',
 };
 
 /* -------------------------------------------------------------------------- */

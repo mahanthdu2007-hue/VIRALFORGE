@@ -162,3 +162,38 @@ describe('scoreClip', () => {
     expect(penalised.rationale).toMatch(/Penalised for/);
   });
 });
+
+/**
+ * The regression this penalty exists for: a live run selected a sponsor read as
+ * its highest-scoring clip of the video, with every other penalty at zero. A
+ * well-delivered ad reads as strong content to every other measurement here, so
+ * the only thing that can stop it shipping is a penalty large enough to outweigh
+ * being good.
+ */
+describe('advertising', () => {
+  const advert = 'Thanks to our friends at Motrin, they created the Motrin Recharge. It tastes great. If you wanna try them, link in the description.';
+
+  it('drops an ad read below ordinary content that scores worse on everything else', () => {
+    // The ad keeps every advantage: strong signals, clean boundaries, good pace.
+    const ad = scoreClip(baseInput({ text: advert }));
+    const ordinary = scoreClip(
+      baseInput({
+        text: 'Nobody saw the twist coming. We tried a new approach and it worked. The result changed everything.',
+        // Deliberately handicapped, to show the penalty decides the outcome.
+        signals: { ...EMPTY_CLIP_SIGNALS, standalone: 0.5 },
+      }),
+    );
+
+    expect(ad.breakdown.penalties.promotional).toBe(1);
+    expect(ordinary.breakdown.penalties.promotional).toBe(0);
+    expect(ad.overall).toBeLessThan(ordinary.overall);
+  });
+
+  it('names advertising in the rationale so a demoted clip is explainable', () => {
+    expect(scoreClip(baseInput({ text: advert })).rationale).toMatch(/advertising/);
+  });
+
+  it('costs an ordinary clip nothing', () => {
+    expect(scoreClip(baseInput()).breakdown.penalties.promotional).toBe(0);
+  });
+});

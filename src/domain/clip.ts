@@ -108,6 +108,17 @@ export const CLIP_SCORE_PENALTIES = [
   'contextDependency',
   /** Greetings, sign-offs, calls to action — speech that is not content. */
   'boilerplate',
+  /**
+   * An advertisement: a sponsor read, a product plug, an affiliate pitch.
+   *
+   * Separate from `boilerplate` and weighted far harder, because the two fail
+   * differently. Housekeeping is *dull* — it wastes the clip's seconds. An ad is
+   * actively wrong: publishing someone else's sponsor segment as your Short
+   * hands a viewer a commercial they did not ask for, and there is no amount of
+   * hook or payoff that redeems it. Boilerplate should lose; this should not
+   * ship.
+   */
+  'promotional',
 ] as const;
 
 export type ClipScorePenalty = (typeof CLIP_SCORE_PENALTIES)[number];

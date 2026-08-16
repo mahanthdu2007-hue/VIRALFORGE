@@ -20,7 +20,8 @@
       "filler": 0.1,
       "repetition": 0.08,
       "contextDependency": 0.12,
-      "boilerplate": 0.1
+      "boilerplate": 0.1,
+      "promotional": 0.25
     }
   },
   "cases": [
@@ -282,7 +283,8 @@
             "filler": 0,
             "repetition": 0,
             "contextDependency": 0,
-            "boilerplate": 0.653
+            "boilerplate": 0.653,
+            "promotional": 0
           },
           "componentTotal": 0.6191,
           "penaltyTotal": 0.0653,
@@ -312,7 +314,8 @@
             "filler": 0,
             "repetition": 0,
             "contextDependency": 0,
-            "boilerplate": 0
+            "boilerplate": 0,
+            "promotional": 0
           },
           "componentTotal": 0.6951,
           "penaltyTotal": 0,
@@ -342,7 +345,8 @@
             "filler": 0.196,
             "repetition": 0,
             "contextDependency": 0,
-            "boilerplate": 0
+            "boilerplate": 0,
+            "promotional": 0
           },
           "componentTotal": 0.7351,
           "penaltyTotal": 0.0196,
@@ -372,7 +376,8 @@
             "filler": 0,
             "repetition": 0,
             "contextDependency": 0.35,
-            "boilerplate": 0
+            "boilerplate": 0,
+            "promotional": 0
           },
           "componentTotal": 0.6253,
           "penaltyTotal": 0.042,
@@ -810,7 +815,8 @@
             "filler": 0,
             "repetition": 0.047,
             "contextDependency": 0,
-            "boilerplate": 0
+            "boilerplate": 0,
+            "promotional": 0
           },
           "componentTotal": 0.7322,
           "penaltyTotal": 0.0038,
@@ -840,7 +846,8 @@
             "filler": 0,
             "repetition": 0.15,
             "contextDependency": 0.12,
-            "boilerplate": 0
+            "boilerplate": 0,
+            "promotional": 0
           },
           "componentTotal": 0.736,
           "penaltyTotal": 0.0264,
@@ -870,7 +877,8 @@
             "filler": 0,
             "repetition": 0,
             "contextDependency": 0.12,
-            "boilerplate": 0
+            "boilerplate": 0,
+            "promotional": 0
           },
           "componentTotal": 0.646,
           "penaltyTotal": 0.0144,
@@ -900,7 +908,8 @@
             "filler": 0,
             "repetition": 0,
             "contextDependency": 0.12,
-            "boilerplate": 0
+            "boilerplate": 0,
+            "promotional": 0
           },
           "componentTotal": 0.6832,
           "penaltyTotal": 0.0144,
@@ -1331,7 +1340,8 @@
             "filler": 0,
             "repetition": 0.104,
             "contextDependency": 0,
-            "boilerplate": 0
+            "boilerplate": 0,
+            "promotional": 0
           },
           "componentTotal": 0.697,
           "penaltyTotal": 0.0083,
@@ -1361,7 +1371,8 @@
             "filler": 0,
             "repetition": 0,
             "contextDependency": 0.35,
-            "boilerplate": 0
+            "boilerplate": 0,
+            "promotional": 0
           },
           "componentTotal": 0.7016,
           "penaltyTotal": 0.042,
@@ -1391,7 +1402,8 @@
             "filler": 0,
             "repetition": 0,
             "contextDependency": 0,
-            "boilerplate": 0
+            "boilerplate": 0,
+            "promotional": 0
           },
           "componentTotal": 0.7111,
           "penaltyTotal": 0,
@@ -1421,7 +1433,8 @@
             "filler": 0,
             "repetition": 0,
             "contextDependency": 0.35,
-            "boilerplate": 0
+            "boilerplate": 0,
+            "promotional": 0
           },
           "componentTotal": 0.699,
           "penaltyTotal": 0.042,
@@ -1852,7 +1865,8 @@
             "filler": 0,
             "repetition": 0.041,
             "contextDependency": 0,
-            "boilerplate": 0
+            "boilerplate": 0,
+            "promotional": 0
           },
           "componentTotal": 0.7076,
           "penaltyTotal": 0.0033,
@@ -1882,7 +1896,8 @@
             "filler": 0,
             "repetition": 0,
             "contextDependency": 0.47,
-            "boilerplate": 0
+            "boilerplate": 0,
+            "promotional": 0
           },
           "componentTotal": 0.6404,
           "penaltyTotal": 0.0564,
@@ -1912,7 +1927,8 @@
             "filler": 0.085,
             "repetition": 0,
             "contextDependency": 0,
-            "boilerplate": 0
+            "boilerplate": 0,
+            "promotional": 0
           },
           "componentTotal": 0.7204,
           "penaltyTotal": 0.0085,
@@ -1942,7 +1958,8 @@
             "filler": 0.147,
             "repetition": 0,
             "contextDependency": 0.12,
-            "boilerplate": 0
+            "boilerplate": 0,
+            "promotional": 0
           },
           "componentTotal": 0.677,
           "penaltyTotal": 0.0291,
@@ -2373,7 +2390,8 @@
             "filler": 0.184,
             "repetition": 0,
             "contextDependency": 0.12,
-            "boilerplate": 0
+            "boilerplate": 0,
+            "promotional": 0
           },
           "componentTotal": 0.7626,
           "penaltyTotal": 0.0328,
@@ -2403,7 +2421,8 @@
             "filler": 0.061,
             "repetition": 0.03,
             "contextDependency": 0,
-            "boilerplate": 0
+            "boilerplate": 0,
+            "promotional": 0
           },
           "componentTotal": 0.7829,
           "penaltyTotal": 0.0085,
@@ -2433,7 +2452,8 @@
             "filler": 0.271,
             "repetition": 0.066,
             "contextDependency": 0.12,
-            "boilerplate": 0
+            "boilerplate": 0,
+            "promotional": 0
           },
           "componentTotal": 0.6959,
           "penaltyTotal": 0.0468,
@@ -2463,7 +2483,8 @@
             "filler": 0.16,
             "repetition": 0.039,
             "contextDependency": 0.35,
-            "boilerplate": 0
+            "boilerplate": 0,
+            "promotional": 0
           },
           "componentTotal": 0.6701,
           "penaltyTotal": 0.0611,
