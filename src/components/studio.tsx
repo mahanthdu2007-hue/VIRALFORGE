@@ -20,7 +20,7 @@ import { useJobStatus, type JobStatus, type JobSummary } from './use-job-status'
 import { Results, type RenderSummary } from './results';
 import { Badge, GhostButton, Panel, PrimaryButton, SectionHeading } from './ui';
 
-type Phase = 'idle' | 'uploading' | 'ready' | 'requesting' | 'running' | 'error';
+type Phase = 'idle' | 'uploading' | 'importing' | 'ready' | 'requesting' | 'running' | 'error';
 
 interface ApiError {
   error: { kind: string; code: string; message: string; details?: Record<string, unknown> };
@@ -28,6 +28,7 @@ interface ApiError {
 
 export function Studio() {
   const [file, setFile] = useState<File | null>(null);
+  const [sourceUrl, setSourceUrl] = useState('');
   const [phase, setPhase] = useState<Phase>('idle');
   const [uploadPercent, setUploadPercent] = useState(0);
   const [video, setVideo] = useState<VideoAsset | null>(null);
@@ -37,7 +38,7 @@ export function Studio() {
 
   const { status, summary, error: statusError } = useJobStatus(jobId);
   const running = phase === 'running' && !status?.terminal;
-  const busy = phase === 'uploading' || phase === 'requesting' || running;
+  const busy = phase === 'uploading' || phase === 'importing' || phase === 'requesting' || running;
 
   // Once the job reaches a terminal state, fetch whatever the render stage
   // actually produced — zero, some, or all three, successes and failures alike.
@@ -90,6 +91,46 @@ export function Studio() {
     }
   }, []);
 
+  /**
+   * Import from a link instead of a file.
+   *
+   * Deliberately lands in the same state the upload path does — a `VideoAsset`
+   * and `phase: 'ready'` — so everything downstream, including Analyse, cannot
+   * tell how the video arrived.
+   */
+  const importUrl = useCallback(async () => {
+    const url = sourceUrl.trim();
+    if (url.length === 0) return;
+
+    setFile(null);
+    setVideo(null);
+    setPhase('importing');
+    setMessage(null);
+
+    try {
+      const res = await fetch('/api/videos/import', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+      const body = (await res.json()) as ApiError & { video?: VideoAsset };
+
+      if (res.status === 201 && body.video) {
+        setVideo(body.video);
+        setPhase('ready');
+        setUploadPercent(100);
+        setSourceUrl('');
+        return;
+      }
+
+      setPhase('error');
+      setMessage(body.error?.message ?? `Unexpected response (${res.status}).`);
+    } catch (error) {
+      setPhase('error');
+      setMessage(error instanceof Error ? error.message : String(error));
+    }
+  }, [sourceUrl]);
+
   const requestAnalysis = useCallback(async () => {
     if (!video) return;
     setPhase('requesting');
@@ -138,6 +179,42 @@ export function Studio() {
           }}
           onClear={reset}
         />
+
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <span className="h-px flex-1 bg-white/10" />
+            <span className="text-[11px] uppercase tracking-wider text-white/40">or paste a link</span>
+            <span className="h-px flex-1 bg-white/10" />
+          </div>
+
+          <div className="flex gap-2">
+            <input
+              type="url"
+              inputMode="url"
+              value={sourceUrl}
+              disabled={busy}
+              placeholder="https://www.youtube.com/watch?v=…"
+              onChange={(event) => setSourceUrl(event.target.value)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  event.preventDefault();
+                  void importUrl();
+                }
+              }}
+              className="min-w-0 flex-1 rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white/90 outline-none placeholder:text-white/30 focus:border-white/25 disabled:opacity-50"
+              aria-label="YouTube link"
+            />
+            <PrimaryButton onClick={() => void importUrl()} disabled={busy || sourceUrl.trim().length === 0}>
+              {phase === 'importing' ? 'Downloading…' : 'Import'}
+            </PrimaryButton>
+          </div>
+
+          {phase === 'importing' ? (
+            <p className="text-xs text-white/50">
+              Downloading from YouTube. A long video takes a few minutes.
+            </p>
+          ) : null}
+        </div>
 
         {video?.metadata ? <MetadataGrid metadata={video.metadata} sizeBytes={video.sizeBytes} /> : null}
 
