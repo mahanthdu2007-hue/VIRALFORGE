@@ -47,6 +47,15 @@ export interface WindowedDiscoveryOptions {
    * window may return, or a moment on the seam is proposed whole by neither.
    */
   readonly overlapSec?: number;
+  /**
+   * Tries per window before it is given up as lost.
+   *
+   * A window that fails costs a tenth of the video's candidates, and the common
+   * failure is the model returning JSON that does not match the schema — a
+   * sampling accident rather than a property of that stretch of transcript, and
+   * one a second draw usually does not repeat.
+   */
+  readonly attemptsPerWindow?: number;
   /** Above this ratio two drafts are the same moment seen from two windows. */
   readonly duplicateOverlapRatio?: number;
   /** Text overlap that makes two drafts duplicates regardless of their times. */
@@ -57,6 +66,7 @@ export interface WindowedDiscoveryOptions {
 export const WINDOWED_DISCOVERY_DEFAULTS = {
   windowSec: 600,
   overlapSec: 90,
+  attemptsPerWindow: 2,
   duplicateOverlapRatio: 0.5,
   duplicateTextSimilarity: 0.6,
 } as const;
@@ -97,26 +107,47 @@ export async function discoverAcrossWindows(
     const segments = request.segments.filter((s) => s.endSec > window.startSec && s.startSec < window.endSec);
     if (segments.length === 0) continue;
 
-    try {
-      // `videoDurationSec` stays the whole video: the segments carry absolute
-      // timestamps, and telling the model the source is ten minutes long while
-      // handing it times at minute thirty invites it to "correct" them.
-      const drafts = await discovery.discoverClips({ ...request, segments });
-      collected.push(...drafts);
+    const attempts = Math.max(1, Math.floor(settings.attemptsPerWindow));
+    let lastError: unknown = null;
+    let done = false;
 
-      options.logger?.debug('discovery window complete', {
-        window: index + 1,
-        of: windows.length,
-        rangeSec: [Math.round(window.startSec), Math.round(window.endSec)],
-        segments: segments.length,
-        drafts: drafts.length,
-      });
-    } catch (error) {
+    for (let attempt = 1; attempt <= attempts && !done; attempt += 1) {
+      try {
+        // `videoDurationSec` stays the whole video: the segments carry absolute
+        // timestamps, and telling the model the source is ten minutes long while
+        // handing it times at minute thirty invites it to "correct" them.
+        const drafts = await discovery.discoverClips({ ...request, segments });
+        collected.push(...drafts);
+        done = true;
+
+        options.logger?.debug('discovery window complete', {
+          window: index + 1,
+          of: windows.length,
+          rangeSec: [Math.round(window.startSec), Math.round(window.endSec)],
+          segments: segments.length,
+          drafts: drafts.length,
+          ...(attempt > 1 ? { attempt } : {}),
+        });
+      } catch (error) {
+        lastError = error;
+        if (attempt < attempts) {
+          options.logger?.warn('discovery window failed; retrying', {
+            window: index + 1,
+            of: windows.length,
+            attempt,
+            reason: error instanceof Error ? error.message : String(error),
+          });
+        }
+      }
+    }
+
+    if (!done) {
       failures += 1;
       options.logger?.warn('discovery window failed; continuing with the others', {
         window: index + 1,
         of: windows.length,
-        reason: error instanceof Error ? error.message : String(error),
+        attempts,
+        reason: lastError instanceof Error ? lastError.message : String(lastError),
       });
     }
   }

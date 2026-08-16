@@ -21,6 +21,7 @@
 import fsp from 'node:fs/promises';
 import path from 'node:path';
 import { createRequire } from 'node:module';
+import { pathToFileURL } from 'node:url';
 import type { Logger } from '@/lib/logger';
 import { CenterSubjectTracker, NullSubjectTracker } from './dev-tracker';
 import { DetectorSubjectTracker } from './detector-tracker';
@@ -181,14 +182,30 @@ const isReadableFile = async (target: string): Promise<boolean> => {
  * `require.resolve` reads the package's manifest and stops. Importing
  * `onnxruntime-node` to find out would load a few hundred megabytes of native
  * runtime purely to answer a yes/no question, on a path taken during startup.
+ *
+ * Resolution is attempted from two places, and the second is not belt and
+ * braces — it is the one that works in production. Under Next.js this module
+ * runs from inside a webpack bundle, so `import.meta.url` points at
+ * `.next/server/...`, and an optional dependency deliberately left unbundled
+ * cannot be resolved from there. The check then reported "not installed" for a
+ * package sitting in `node_modules`, and face tracking silently became a centre
+ * crop in the built app while working perfectly under `node` and `vitest` —
+ * which is exactly the kind of environment-dependent falsehood this function
+ * must not tell. The project root resolves it in both worlds.
  */
 export function isInstalled(specifier: string): boolean {
-  try {
-    createRequire(import.meta.url).resolve(specifier);
-    return true;
-  } catch {
-    return false;
+  const roots = [import.meta.url, pathToFileURL(path.join(process.cwd(), 'package.json')).href];
+
+  for (const root of roots) {
+    try {
+      createRequire(root).resolve(specifier);
+      return true;
+    } catch {
+      // Try the next root; only every root failing means genuinely absent.
+    }
   }
+
+  return false;
 }
 
 const defined = <T extends object>(source: T): Partial<T> =>

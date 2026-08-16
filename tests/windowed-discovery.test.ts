@@ -227,12 +227,13 @@ describe('discoverAcrossWindows', () => {
     expect(merged.length).toBeGreaterThan(12);
   });
 
-  it('survives one failing window and keeps the rest', async () => {
-    let call = 0;
-    const discovery = capability(async (r) => {
-      call += 1;
-      if (call === 2) throw new Error('gateway timeout');
-      return [draft({ startSec: r.segments[0]!.startSec, endSec: r.segments[0]!.startSec + 30, hookQuote: `q${call}` })];
+  it('retries a window that fails once, and keeps its candidates', async () => {
+    let calls = 0;
+    const discovery = capability(async () => {
+      calls += 1;
+      // The second window's first attempt fails, exactly as a schema mismatch does.
+      if (calls === 2) throw new Error('Discovery response did not match the expected schema.');
+      return [draft({ startSec: calls * 100, endSec: calls * 100 + 30, hookQuote: `q${calls}` })];
     });
 
     const merged = await discoverAcrossWindows(
@@ -240,7 +241,33 @@ describe('discoverAcrossWindows', () => {
       request({ segments: segments(128), videoDurationSec: 1920 }),
     );
 
-    expect(merged.length).toBeGreaterThan(0);
+    // One extra call for the retry, and nothing lost to the failure.
+    expect(calls).toBe(5);
+    expect(merged).toHaveLength(4);
+  });
+
+  it('gives a permanently failing window up after its attempts, and keeps the rest', async () => {
+    const attemptsByWindow = new Map<number, number>();
+    const discovery = capability(async (r) => {
+      const start = r.segments[0]!.startSec;
+      attemptsByWindow.set(start, (attemptsByWindow.get(start) ?? 0) + 1);
+
+      // One window is broken every time, not just once.
+      if (start === 510) throw new Error('always broken');
+      return [draft({ startSec: start, endSec: start + 30, hookQuote: `w${start}` })];
+    });
+
+    const merged = await discoverAcrossWindows(
+      discovery,
+      request({ segments: segments(128), videoDurationSec: 1920 }),
+    );
+
+    expect(attemptsByWindow.get(510)).toBe(2);
+    // Every other window was asked exactly once and its candidates survived.
+    for (const [start, attempts] of attemptsByWindow) {
+      if (start !== 510) expect(attempts).toBe(1);
+    }
+    expect(merged).toHaveLength(attemptsByWindow.size - 1);
   });
 
   it('throws when every window fails rather than reporting no good moments', async () => {
