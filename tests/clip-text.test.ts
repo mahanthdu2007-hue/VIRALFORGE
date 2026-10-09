@@ -285,3 +285,61 @@ describe('contentWords / textSimilarity', () => {
     expect(textSimilarity('', '')).toBe(0);
   });
 });
+
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Advertising detection, measured against the reads that actually shipped.
+ *
+ * A live run put two sponsor segments into its top three Shorts, and the
+ * strongest-scoring clip of the run was a product read. Neither said "sponsored
+ * by", which is why the cases below are quoted from the real transcripts rather
+ * than invented.
+ */
+describe('promotional detection', () => {
+  const promo = (text: string) => analyseText(text).promotionalStrength;
+
+  it('saturates on a real sponsor read', () => {
+    expect(
+      promo('Thanks to our friends at Motrin, they created the Motrin Recharge. It tastes great.'),
+    ).toBe(1);
+  });
+
+  it('saturates on a real product placement that never says "sponsor"', () => {
+    expect(
+      promo(
+        'Everyone eating our brand new beefsticks? It tastes great. Good amount of protein. ' +
+          'I am glad you guys are enjoying our new beefsticks. If you wanna try them, it is a bit about these retailers.',
+      ),
+    ).toBe(1);
+  });
+
+  it('catches the affiliate pitch shape', () => {
+    expect(promo('Use code SAVE20 at checkout, link in the description, available now at these retailers.')).toBe(1);
+  });
+
+  it('leaves ordinary speech alone', () => {
+    expect(promo('He looked at me and said nothing. Then he told me the whole thing had been a lie.')).toBe(0);
+    expect(promo('We tried it and it did not work at all, so we started over from scratch.')).toBe(0);
+  });
+
+  it('charges a single incidental phrase far less than an ad read', () => {
+    // "our new" and "try it out" are unremarkable on their own; a real ad read
+    // stacks several markers, which is what separates the two.
+    const incidental = promo('Our new house took three years to build and nearly bankrupted us.');
+
+    expect(incidental).toBeGreaterThan(0);
+    expect(incidental).toBeLessThanOrEqual(0.2);
+    expect(incidental).toBeLessThan(promo('Sponsored by Motrin. Use code SAVE20.'));
+  });
+
+  it('is bounded to 0..1 however many markers pile up', () => {
+    const everything = promo(
+      'Sponsored by them, brought to you by them, use code NOW, promo code NOW, link in bio, ' +
+        'link below, in stores now, these retailers, partnered with them, our brand new thing.',
+    );
+
+    expect(everything).toBe(1);
+    expect(promo('')).toBe(0);
+  });
+});

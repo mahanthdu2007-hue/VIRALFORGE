@@ -34,6 +34,12 @@ export const DEFAULT_SCORE_WEIGHTS: ClipScoreWeights = {
     repetition: 0.08,
     contextDependency: 0.12,
     boilerplate: 0.1,
+    // The heaviest penalty by a wide margin, and the only one meant to change a
+    // clip's fate on its own. A sponsor read can be genuinely well delivered —
+    // the one that shipped scored highest of its run on hook and payoff — so
+    // anything gentler leaves it winning. This is large enough to drop a fully
+    // detected ad below ordinary content whatever else it has going for it.
+    promotional: 0.25,
   },
 };
 

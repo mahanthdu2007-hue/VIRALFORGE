@@ -373,6 +373,84 @@ const BOILERPLATE_PHRASES = [
   'good evening everyone',
 ];
 
+/**
+ * Advertising, as it is actually spoken.
+ *
+ * Built from real sponsor segments a live run selected as Shorts, which is why
+ * it does not look like a list of the word "sponsor". The reads that got through
+ * never said "sponsored by" — they said *"Thanks to our friends at Motrin"*, and
+ * *"our brand new beefsticks… it tastes great… if you wanna try them, it's a bit
+ * about these retailers"*. A creator reading an ad talks about the product the
+ * way they talk about anything else; what gives it away is who owns the product
+ * and what the sentence wants the viewer to do.
+ *
+ * Split by confidence rather than pooled, because the cost of a false positive
+ * is a genuinely good moment demoted. `STRONG` phrases have no innocent reading.
+ * `WEAK` ones do — "our new" is unremarkable in a hundred contexts — so they
+ * carry a third of the weight and rely on arriving together, which in a real ad
+ * read they always do.
+ */
+const PROMOTIONAL_STRONG = [
+  'sponsored by',
+  'todays sponsor',
+  'our sponsor',
+  'thanks to our sponsor',
+  'thanks to our friends at',
+  'thanks to our partners at',
+  'brought to you by',
+  'partnered with',
+  'in partnership with',
+  'use code',
+  'promo code',
+  'discount code',
+  'link in the description',
+  'link in bio',
+  'link below',
+  'in stores now',
+  'these retailers',
+  'at retailers',
+  'available now at',
+  'go check out their',
+];
+
+const PROMOTIONAL_WEAK = [
+  'our brand new',
+  'our new',
+  'we created',
+  'they created the',
+  'if you wanna try',
+  'if you want to try',
+  'try them out',
+  'try it out',
+  'tastes great',
+  'taste great',
+  'you guys are enjoying',
+  'grab yours',
+  'get yours',
+  'on sale',
+  'limited time',
+];
+
+/** Weight a single strong marker carries. Two of them saturate the penalty. */
+const PROMOTIONAL_STRONG_WEIGHT = 0.6;
+/** Weight a single weak marker carries. Alone, one is close to noise. */
+const PROMOTIONAL_WEAK_WEIGHT = 0.2;
+
+/**
+ * How strongly the clip reads as an advertisement, 0..1.
+ *
+ * Hits are counted rather than measured as a share of the clip, because a
+ * thirty-second Short that is one-third sponsor read is not one-third as bad as
+ * one that is entirely sponsor read — both are ads. A ratio would let a long
+ * clip bury a plug; a count will not.
+ */
+export function measurePromotional(normalised: string): number {
+  const strong = countPhrases(normalised, PROMOTIONAL_STRONG);
+  const weak = countPhrases(normalised, PROMOTIONAL_WEAK);
+
+  return clamp01(strong * PROMOTIONAL_STRONG_WEIGHT + weak * PROMOTIONAL_WEAK_WEIGHT);
+}
+
 /** Bare greetings, which are boilerplate on their own when a clip opens on one. */
 const GREETING_OPENERS = new Set(['hello', 'hi', 'hey', 'yo', 'greetings', 'welcome']);
 
@@ -442,6 +520,8 @@ export interface TextFeatures {
   readonly payoffStrength: number;
   /** Channel housekeeping as a share of all words, 0..1. */
   readonly boilerplateRatio: number;
+  /** How strongly the clip reads as an ad read or product plug, 0..1. */
+  readonly promotionalStrength: number;
   /** Words in the first sentence. Short openings land harder. */
   readonly firstSentenceWordCount: number;
   /** The first sentence starts with a word that grabs attention. */
@@ -493,6 +573,7 @@ export function analyseText(text: string): TextFeatures {
     closingPayoffHits: countPhrases(closing, PAYOFF_PHRASES) + countPhrases(closing, RESOLUTION_PHRASES),
     payoffStrength: measurePayoff(sentences),
     boilerplateRatio: safeRatio(countBoilerplateWords(normalised), wordCount),
+    promotionalStrength: measurePromotional(normalised),
     firstSentenceWordCount: firstTokens.length,
     opensOnHookWord: HOOK_OPENER_WORDS.has(firstWord) || firstSentence.includes('?'),
     opensOnContinuation: CONTINUATION_OPENERS.has(firstWord),

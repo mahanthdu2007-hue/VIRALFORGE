@@ -45,6 +45,21 @@ export interface SubtitleStyle {
   readonly shadowDepth: number;
   /** 1 = outline + drop shadow, 3 = opaque box behind the text. */
   readonly borderStyle: 1 | 3;
+  /**
+   * Colour the word currently being spoken, one word at a time.
+   *
+   * Off falls back to a single static row per cue. Requires the cue to carry
+   * word timings; a cue without them is rendered statically whatever this says,
+   * because the alternative is inventing a rhythm the speaker did not have.
+   */
+  readonly karaoke: boolean;
+  /**
+   * Fill for the active word, `&HAABBGGRR` like the others.
+   *
+   * Read as a *highlight*, so it has to survive being on top of arbitrary
+   * video: a saturated warm colour against the white the rest of the line uses.
+   */
+  readonly highlightColour: string;
 }
 
 /**
@@ -64,6 +79,10 @@ export const DEFAULT_SUBTITLE_STYLE: SubtitleStyle = {
   outlineWidth: 3,
   shadowDepth: 0,
   borderStyle: 1,
+  karaoke: true,
+  // Gold: bright enough to read as deliberate against white, and it survives
+  // both the dark and blown-out frames a caption has to sit on.
+  highlightColour: '&H0000D7FF',
 };
 
 /** The style row's name. Every dialogue line references it. */
@@ -98,10 +117,92 @@ export function renderAssDocument(plan: SubtitlePlan, style: SubtitleStyle = DEF
     '',
     '[Events]',
     'Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text',
-    ...plan.segments.map(dialogueRow),
+    ...plan.segments.flatMap((cue) => dialogueRows(cue, style)),
   ];
 
   return `${lines.join('\n')}\n`;
+}
+
+/**
+ * The rows one cue becomes: one static row, or one per word when highlighting.
+ *
+ * Word highlighting is drawn as a series of complete cues rather than with ASS'
+ * own `\k` karaoke tags, and the difference is what it looks like. `\k` fills
+ * the line progressively and leaves everything behind the cursor recoloured,
+ * which reads as a lyric sheet. Redrawing the whole line once per word, with
+ * only that word tinted, is the Shorts convention: the sentence stays legible
+ * and one word is picked out of it.
+ *
+ * The words tile the cue exactly — each is shown until the next one starts, and
+ * the last holds to the cue's end — so there is no frame where the caption
+ * blinks out between words.
+ */
+export function dialogueRows(cue: SubtitleSegment, style: SubtitleStyle = DEFAULT_SUBTITLE_STYLE): string[] {
+  const words = cue.words ?? [];
+  if (!style.karaoke || words.length === 0) return [row(cue.startSec, cue.endSec, assText(cue))];
+
+  const lineLengths = cue.lines.map((line) => line.split(' ').filter((w) => w.length > 0).length);
+  // The validator already guarantees the words spell the lines; if some caller
+  // hand-built a cue where they do not, a static row is the honest fallback.
+  if (lineLengths.reduce((sum, n) => sum + n, 0) !== words.length) {
+    return [row(cue.startSec, cue.endSec, assText(cue))];
+  }
+
+  const normal = inlineColour(style.primaryColour);
+  const highlight = inlineColour(style.highlightColour);
+
+  return words.flatMap((word, index) => {
+    const startSec = index === 0 ? cue.startSec : Math.max(word.startSec, cue.startSec);
+    const endSec = index === words.length - 1 ? cue.endSec : words[index + 1]!.startSec;
+    if (!(endSec > startSec)) return [];
+
+    return [row(startSec, endSec, highlightedText(cue.lines, lineLengths, words, index, normal, highlight))];
+  });
+}
+
+/** The cue's lines with word `active` tinted, everything else left as it is. */
+function highlightedText(
+  lines: readonly string[],
+  lineLengths: readonly number[],
+  words: readonly { readonly text: string }[],
+  active: number,
+  normal: string,
+  highlight: string,
+): string {
+  const rendered: string[] = [];
+  let cursor = 0;
+
+  for (const length of lineLengths) {
+    const parts: string[] = [];
+
+    for (let i = cursor; i < cursor + length; i += 1) {
+      const text = escapeAssText(words[i]!.text);
+      // The override wraps the escaped word, never the other way round, so a
+      // transcript containing a brace cannot close the tag it sits inside.
+      parts.push(i === active ? `{\\c${highlight}}${text}{\\c${normal}}` : text);
+    }
+
+    rendered.push(parts.join(' '));
+    cursor += length;
+  }
+
+  return rendered.join('\\N');
+}
+
+const row = (startSec: number, endSec: number, text: string): string =>
+  `Dialogue: 0,${formatAssTime(startSec)},${formatAssTime(endSec)},${STYLE_NAME},,0,0,0,,${text}`;
+
+/**
+ * A style colour (`&HAABBGGRR`) as an inline override takes it (`&HBBGGRR&`).
+ *
+ * Inline `\c` carries no alpha — transparency is `\alpha`'s job — so the alpha
+ * byte is dropped rather than passed through, where it would be read as part of
+ * the blue channel and silently change the colour.
+ */
+export function inlineColour(assColour: string): string {
+  const hex = assColour.replace(/^&H/iu, '').replace(/&$/u, '');
+  const bgr = hex.length >= 8 ? hex.slice(-6) : hex.padStart(6, '0');
+  return `&H${bgr.toUpperCase()}&`;
 }
 
 const styleRow = (layout: SubtitleLayout, style: SubtitleStyle): string =>
@@ -132,9 +233,6 @@ const styleRow = (layout: SubtitleLayout, style: SubtitleStyle): string =>
     String(layout.marginVerticalPx),
     '1',
   ].join(',');
-
-const dialogueRow = (cue: SubtitleSegment): string =>
-  `Dialogue: 0,${formatAssTime(cue.startSec)},${formatAssTime(cue.endSec)},${STYLE_NAME},,0,0,0,,${assText(cue)}`;
 
 /** The cue's lines, hard-broken with `\N` and escaped for ASS. */
 export const assText = (cue: SubtitleSegment): string =>

@@ -18,7 +18,9 @@
       "Bash(rm -f ./.smoke-riva.mjs)",
       "Bash(sed -i \"s|const json = src.slice\\(src.indexOf\\('{'\\), src.lastIndexOf\\('} as const;'\\) + 1\\);|const marker = 'RIVA_ASR_DESCRIPTOR ='; const json = src.slice\\(src.indexOf\\('{', src.indexOf\\(marker\\)\\), src.lastIndexOf\\('} as const;'\\) + 1\\);|\" \"C:/Users/MAHANT~1/AppData/Local/Temp/claude/E--PROJECTS-shortt-claude/fe12ec71-b45b-4a38-9db6-5ebe65b65e64/scratchpad/smoke.mjs\")",
       "Bash(cp \"C:/Users/MAHANT~1/AppData/Local/Temp/claude/E--PROJECTS-shortt-claude/f0b5ace8-4b26-473d-933f-bd52f302c3f9/scratchpad/riva-unary-probe.mjs\" ./riva-unary-probe.mjs)",
-      "Bash(node ./riva-unary-probe.mjs)"
+      "Bash(node ./riva-unary-probe.mjs)",
+      "Bash(tasklist)",
+      "Bash(sqlite3 *)"
     ]
   }
 }

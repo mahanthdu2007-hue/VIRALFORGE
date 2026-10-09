@@ -20,6 +20,8 @@ Look for: strong opening statements, curiosity, emotional intensity, surprising 
 
 Avoid: greetings, introductions and sign-offs, filler, long pauses, repetition, incomplete thoughts, and anything that only makes sense with context from elsewhere in the video.
 
+Never return an advertisement. Sponsor reads, product plugs, affiliate pitches and discount codes are disqualified no matter how well delivered — a viewer who came for the video did not come for a commercial. This includes segments where the speaker praises a product they are selling, lists where to buy it, or thanks a brand. If a strong moment sits partly inside an ad read, either start it after the ad ends or leave it out.
+
 Cover distinct moments. Several near-duplicates of the same moment with slightly different boundaries crowd out the rest of the video: if two candidates would leave a viewer with essentially the same thing, return only the stronger one, and spend the remaining slots elsewhere in the transcript.
 
 Rules you must follow exactly:
